@@ -1,0 +1,41 @@
+# Button
+
+A clickable action element built on top of a native `<button>`, with support
+for rendering as any other element via `asChild` (Radix `Slot`).
+
+## Import
+
+```tsx
+import { Button } from "@coreuix/ui";
+```
+
+## Usage
+
+```tsx
+<Button>Click me</Button>
+<Button variant="destructive">Delete</Button>
+<Button variant="outline" size="sm">Small outline</Button>
+<Button variant="ghost" size="icon">
+  <IconComponent />
+</Button>
+```
+
+### Rendering as a different element
+
+```tsx
+<Button asChild>
+  <a href="/somewhere">Link styled as a button</a>
+</Button>
+```
+
+## Props
+
+| Prop        | Type                                                                 | Default     | Description                                             |
+| ----------- | --------------------------------------------------------------------- | ----------- | -------------------------------------------------------- |
+| `variant`   | `"default" \| "destructive" \| "outline" \| "secondary" \| "ghost" \| "link"` | `"default"` | Visual style of the button.                              |
+| `size`      | `"default" \| "sm" \| "lg" \| "icon"`                                | `"default"` | Size of the button.                                       |
+| `asChild`   | `boolean`                                                              | `false`     | Renders the passed child element instead of a `<button>`. |
+| `className` | `string`                                                               | —           | Additional classes merged in via `cn`.                    |
+
+All other props are forwarded to the underlying `<button>` (or the child
+element when `asChild` is used).

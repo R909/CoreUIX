@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/styles.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@coreuix/components",
+    "utils": "@coreuix/lib/utils",
+    "ui": "@coreuix/components",
+    "lib": "@coreuix/lib",
+    "hooks": "@coreuix/hooks"
+  },
+  "iconLibrary": "lucide"
+}
