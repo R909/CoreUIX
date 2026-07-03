@@ -27,7 +27,9 @@ export interface CoreUIXTheme {
     lg: string
   }
    typography: {
-    fontFamily: "Inter"
+   fontFamily:string
+    fontSize:string
+    lineHeight:string
   }
 }
 

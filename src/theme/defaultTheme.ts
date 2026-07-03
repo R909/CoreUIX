@@ -36,6 +36,11 @@ md:"8px",
 
 lg:"12px"
 
+},
+typography:{    
+    fontFamily:"Inter, sans-serif",
+    fontSize:"16px",
+    lineHeight:"24px"
 }
 
 }
