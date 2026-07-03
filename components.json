@@ -15,7 +15,8 @@
     "utils": "@coreuix/lib/utils",
     "ui": "@coreuix/components",
     "lib": "@coreuix/lib",
-    "hooks": "@coreuix/hooks"
+    "hooks": "@coreuix/hooks",
+    "theme": "@coreuix/theme"
   },
   "iconLibrary": "lucide"
 }
