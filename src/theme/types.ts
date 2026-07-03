@@ -26,6 +26,9 @@ export interface CoreUIXTheme {
     md: string
     lg: string
   }
+   typography: {
+    fontFamily: "Inter"
+  }
 }
 
 export type DeepPartial<T> = {
