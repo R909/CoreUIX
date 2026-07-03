@@ -1,10 +1,12 @@
 import deepmerge from "deepmerge";
 
 import { defaultTheme } from "./defaultTheme";
-import type { CoreUIXTheme } from "./types";
+import type { CoreUIXTheme, DeepPartial } from "./types";
 
 export function createTheme(
-  theme: Partial<CoreUIXTheme> = {}
+  theme: DeepPartial<CoreUIXTheme> = {}
 ): CoreUIXTheme {
-  return deepmerge(defaultTheme, theme);
+  const mergedTheme = deepmerge(defaultTheme, theme);
+
+  return mergedTheme as CoreUIXTheme;
 }

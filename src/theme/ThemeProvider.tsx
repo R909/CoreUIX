@@ -1,12 +1,10 @@
-import type { ReactNode } from "react";
-
 import { ThemeContext } from "./ThemeContext";
 import { createTheme } from "./createTheme";
-import type { CoreUIXTheme } from "./types";
+import type {DeepPartial, CoreUIXTheme } from "./types";
 
 interface ThemeProviderProps {
-  children: ReactNode;
-  theme?: Partial<CoreUIXTheme>;
+  children: React.ReactNode;
+  theme?: DeepPartial<CoreUIXTheme>;
 }
 
 export function ThemeProvider({
