@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 
 import { ThemeContext } from "./ThemeContext";
 import { createTheme } from "./createTheme";
+import { applyTheme } from "./cssVariables";
 import type { CoreUIXTheme, DeepPartial } from "./types";
 
 interface ThemeProviderProps {
@@ -16,22 +17,10 @@ export function ThemeProvider({
   children,
   theme = {},
 }: ThemeProviderProps) {
-  const mergedTheme = createTheme(theme);
+  const mergedTheme = useMemo(() => createTheme(theme), [theme]);
 
   useEffect(() => {
-    const root = document.documentElement;
-
-    Object.entries(mergedTheme.colors).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value);
-    });
-
-    Object.entries(mergedTheme.radius).forEach(([key, value]) => {
-      root.style.setProperty(`--radius-${key}`, value);
-    });
-
-    Object.entries(mergedTheme.typography).forEach(([key, value]) => {
-      root.style.setProperty(`--${key}`, value);
-    });
+    applyTheme(mergedTheme);
   }, [mergedTheme]);
 
   return (

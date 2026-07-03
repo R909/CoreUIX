@@ -1,35 +1,19 @@
-import type { CoreUIXTheme } from "./types"
+import type { CoreUIXTheme } from "./types";
+
+function camelToKebab(key: string) {
+  return key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
+}
 
 export function applyTheme(theme: CoreUIXTheme) {
+  const root = document.documentElement;
 
-const root=document.documentElement
+  Object.entries(theme.colors).forEach(([key, value]) => {
+    root.style.setProperty(`--${camelToKebab(key)}`, value);
+  });
 
-root.style.setProperty("--background",theme.colors.background)
+  root.style.setProperty("--radius", theme.radius);
 
-root.style.setProperty("--foreground",theme.colors.foreground)
-
-root.style.setProperty("--primary",theme.colors.primary)
-
-root.style.setProperty("--primary-foreground",theme.colors.primaryForeground)
-
-root.style.setProperty("--secondary",theme.colors.secondary)
-
-root.style.setProperty("--secondary-foreground",theme.colors.secondaryForeground)
-
-root.style.setProperty("--border",theme.colors.border)
-
-root.style.setProperty("--ring",theme.colors.ring)
-
-root.style.setProperty("--muted",theme.colors.muted)
-
-root.style.setProperty("--card",theme.colors.card)
-
-root.style.setProperty("--card-foreground",theme.colors.cardForeground)
-
-root.style.setProperty("--radius-sm",theme.radius.sm)
-
-root.style.setProperty("--radius-md",theme.radius.md)
-
-root.style.setProperty("--radius-lg",theme.radius.lg)
-
+  Object.entries(theme.typography).forEach(([key, value]) => {
+    root.style.setProperty(`--${camelToKebab(key)}`, value);
+  });
 }

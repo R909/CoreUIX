@@ -10,26 +10,32 @@ export interface CoreUIXTheme {
     secondaryForeground: string
 
     destructive: string
+    destructiveForeground: string
 
     border: string
+    input: string
 
     ring: string
 
     muted: string
+    mutedForeground: string
+
+    accent: string
+    accentForeground: string
+
+    popover: string
+    popoverForeground: string
 
     card: string
     cardForeground: string
   }
 
-  radius: {
-    sm: string
-    md: string
-    lg: string
-  }
-   typography: {
-   fontFamily:string
-    fontSize:string
-    lineHeight:string
+  radius: string
+
+  typography: {
+    fontFamily: string
+    fontSize: string
+    lineHeight: string
   }
 }
 

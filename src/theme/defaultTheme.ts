@@ -1,46 +1,42 @@
-export const defaultTheme = {
+import type { CoreUIXTheme } from "./types";
 
-colors:{
+export const defaultTheme: CoreUIXTheme = {
+  colors: {
+    background: "#ffffff",
+    foreground: "#111827",
 
-background:"#ffffff",
+    primary: "#2563eb",
+    primaryForeground: "#ffffff",
 
-foreground:"#111827",
+    secondary: "#f3f4f6",
+    secondaryForeground: "#111827",
 
-primary:"#2563eb",
+    destructive: "#dc2626",
+    destructiveForeground: "#ffffff",
 
-primaryForeground:"#ffffff",
+    border: "#e5e7eb",
+    input: "#e5e7eb",
 
-secondary:"#f3f4f6",
+    ring: "#2563eb",
 
-secondaryForeground:"#111827",
+    muted: "#f9fafb",
+    mutedForeground: "#6b7280",
 
-destructive:"#dc2626",
+    accent: "#f3f4f6",
+    accentForeground: "#111827",
 
-border:"#e5e7eb",
+    popover: "#ffffff",
+    popoverForeground: "#111827",
 
-ring:"#2563eb",
+    card: "#ffffff",
+    cardForeground: "#111827",
+  },
 
-muted:"#f9fafb",
+  radius: "12px",
 
-card:"#ffffff",
-
-cardForeground:"#111827"
-
-},
-
-radius:{
-
-sm:"4px",
-
-md:"8px",
-
-lg:"12px"
-
-},
-typography:{    
-    fontFamily:"Inter, sans-serif",
-    fontSize:"16px",
-    lineHeight:"24px"
-}
-
-}
+  typography: {
+    fontFamily: "Inter, sans-serif",
+    fontSize: "16px",
+    lineHeight: "24px",
+  },
+};
