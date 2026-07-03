@@ -32,11 +32,45 @@ export const defaultTheme: CoreUIXTheme = {
     cardForeground: "#111827",
   },
 
-  radius: "12px",
+  radius: {
+    sm: "6px",
+    md: "8px",
+    lg: "12px",
+  },
+
+  spacing: {
+    xs: "4px",
+    sm: "8px",
+    md: "16px",
+    lg: "24px",
+  },
+
+  shadow: {
+    sm: "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    md: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+    lg: "0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1)",
+  },
+
+  zIndex: {
+    modal: "1000",
+    tooltip: "1500",
+  },
+
+  breakpoints: {
+    sm: "640px",
+    md: "768px",
+  },
 
   typography: {
-    fontFamily: "Inter, sans-serif",
-    fontSize: "16px",
+    fontFamily: {
+      body: "Inter, sans-serif",
+      heading: "Inter, sans-serif",
+    },
+    fontSize: {
+      sm: "14px",
+      md: "16px",
+      lg: "18px",
+    },
     lineHeight: "24px",
   },
 };

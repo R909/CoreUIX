@@ -4,48 +4,73 @@
 
 @layer base {
   :root {
-    --background: #ffffff;
-    --foreground: #111827;
-    --card: #ffffff;
-    --card-foreground: #111827;
-    --popover: #ffffff;
-    --popover-foreground: #111827;
-    --primary: #2563eb;
-    --primary-foreground: #ffffff;
-    --secondary: #f3f4f6;
-    --secondary-foreground: #111827;
-    --muted: #f9fafb;
-    --muted-foreground: #6b7280;
-    --accent: #f3f4f6;
-    --accent-foreground: #111827;
-    --destructive: #dc2626;
-    --destructive-foreground: #ffffff;
-    --border: #e5e7eb;
-    --input: #e5e7eb;
-    --ring: #2563eb;
-    --radius: 12px;
+    --cuix-colors-background: #ffffff;
+    --cuix-colors-foreground: #111827;
+    --cuix-colors-card: #ffffff;
+    --cuix-colors-card-foreground: #111827;
+    --cuix-colors-popover: #ffffff;
+    --cuix-colors-popover-foreground: #111827;
+    --cuix-colors-primary: #2563eb;
+    --cuix-colors-primary-foreground: #ffffff;
+    --cuix-colors-secondary: #f3f4f6;
+    --cuix-colors-secondary-foreground: #111827;
+    --cuix-colors-muted: #f9fafb;
+    --cuix-colors-muted-foreground: #6b7280;
+    --cuix-colors-accent: #f3f4f6;
+    --cuix-colors-accent-foreground: #111827;
+    --cuix-colors-destructive: #dc2626;
+    --cuix-colors-destructive-foreground: #ffffff;
+    --cuix-colors-border: #e5e7eb;
+    --cuix-colors-input: #e5e7eb;
+    --cuix-colors-ring: #2563eb;
+
+    --cuix-radius-sm: 6px;
+    --cuix-radius-md: 8px;
+    --cuix-radius-lg: 12px;
+
+    --cuix-spacing-xs: 4px;
+    --cuix-spacing-sm: 8px;
+    --cuix-spacing-md: 16px;
+    --cuix-spacing-lg: 24px;
+
+    --cuix-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --cuix-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --cuix-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+    --cuix-font-size-sm: 14px;
+    --cuix-font-size-md: 16px;
+    --cuix-font-size-lg: 18px;
+
+    --cuix-font-family-body: Inter, sans-serif;
+    --cuix-font-family-heading: Inter, sans-serif;
+
+    --cuix-z-index-modal: 1000;
+    --cuix-z-index-tooltip: 1500;
+
+    --cuix-breakpoint-sm: 640px;
+    --cuix-breakpoint-md: 768px;
   }
 
   .dark {
-    --background: #0a0a0a;
-    --foreground: #fafafa;
-    --card: #0a0a0a;
-    --card-foreground: #fafafa;
-    --popover: #0a0a0a;
-    --popover-foreground: #fafafa;
-    --primary: #fafafa;
-    --primary-foreground: #171717;
-    --secondary: #262626;
-    --secondary-foreground: #fafafa;
-    --muted: #262626;
-    --muted-foreground: #a3a3a3;
-    --accent: #262626;
-    --accent-foreground: #fafafa;
-    --destructive: #7f1d1d;
-    --destructive-foreground: #fafafa;
-    --border: #262626;
-    --input: #262626;
-    --ring: #d4d4d4;
+    --cuix-colors-background: #0a0a0a;
+    --cuix-colors-foreground: #fafafa;
+    --cuix-colors-card: #0a0a0a;
+    --cuix-colors-card-foreground: #fafafa;
+    --cuix-colors-popover: #0a0a0a;
+    --cuix-colors-popover-foreground: #fafafa;
+    --cuix-colors-primary: #fafafa;
+    --cuix-colors-primary-foreground: #171717;
+    --cuix-colors-secondary: #262626;
+    --cuix-colors-secondary-foreground: #fafafa;
+    --cuix-colors-muted: #262626;
+    --cuix-colors-muted-foreground: #a3a3a3;
+    --cuix-colors-accent: #262626;
+    --cuix-colors-accent-foreground: #fafafa;
+    --cuix-colors-destructive: #7f1d1d;
+    --cuix-colors-destructive-foreground: #fafafa;
+    --cuix-colors-border: #262626;
+    --cuix-colors-input: #262626;
+    --cuix-colors-ring: #d4d4d4;
   }
 
   * {

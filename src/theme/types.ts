@@ -30,11 +30,45 @@ export interface CoreUIXTheme {
     cardForeground: string
   }
 
-  radius: string
+  radius: {
+    sm: string
+    md: string
+    lg: string
+  }
+
+  spacing: {
+    xs: string
+    sm: string
+    md: string
+    lg: string
+  }
+
+  shadow: {
+    sm: string
+    md: string
+    lg: string
+  }
+
+  zIndex: {
+    modal: string
+    tooltip: string
+  }
+
+  breakpoints: {
+    sm: string
+    md: string
+  }
 
   typography: {
-    fontFamily: string
-    fontSize: string
+    fontFamily: {
+      body: string
+      heading: string
+    }
+    fontSize: {
+      sm: string
+      md: string
+      lg: string
+    }
     lineHeight: string
   }
 }

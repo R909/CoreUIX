@@ -30,51 +30,75 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
     },
     extend: {
       colors: {
-        border: "var(--border)",
-        input: "var(--input)",
-        ring: "var(--ring)",
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        border: "var(--cuix-colors-border)",
+        input: "var(--cuix-colors-input)",
+        ring: "var(--cuix-colors-ring)",
+        background: "var(--cuix-colors-background)",
+        foreground: "var(--cuix-colors-foreground)",
 
         primary: {
-          DEFAULT: "var(--primary)",
-          foreground: "var(--primary-foreground)",
+          DEFAULT: "var(--cuix-colors-primary)",
+          foreground: "var(--cuix-colors-primary-foreground)",
         },
 
         secondary: {
-          DEFAULT: "var(--secondary)",
-          foreground: "var(--secondary-foreground)",
+          DEFAULT: "var(--cuix-colors-secondary)",
+          foreground: "var(--cuix-colors-secondary-foreground)",
         },
 
         destructive: {
-          DEFAULT: "var(--destructive)",
-          foreground: "var(--destructive-foreground)",
+          DEFAULT: "var(--cuix-colors-destructive)",
+          foreground: "var(--cuix-colors-destructive-foreground)",
         },
 
         muted: {
-          DEFAULT: "var(--muted)",
-          foreground: "var(--muted-foreground)",
+          DEFAULT: "var(--cuix-colors-muted)",
+          foreground: "var(--cuix-colors-muted-foreground)",
         },
 
         accent: {
-          DEFAULT: "var(--accent)",
-          foreground: "var(--accent-foreground)",
+          DEFAULT: "var(--cuix-colors-accent)",
+          foreground: "var(--cuix-colors-accent-foreground)",
         },
 
         popover: {
-          DEFAULT: "var(--popover)",
-          foreground: "var(--popover-foreground)",
+          DEFAULT: "var(--cuix-colors-popover)",
+          foreground: "var(--cuix-colors-popover-foreground)",
         },
 
         card: {
-          DEFAULT: "var(--card)",
-          foreground: "var(--card-foreground)",
+          DEFAULT: "var(--cuix-colors-card)",
+          foreground: "var(--cuix-colors-card-foreground)",
         },
       },
       borderRadius: {
-        lg: "var(--radius)",
-        md: "calc(var(--radius) - 2px)",
-        sm: "calc(var(--radius) - 4px)",
+        lg: "var(--cuix-radius-lg)",
+        md: "var(--cuix-radius-md)",
+        sm: "var(--cuix-radius-sm)",
+      },
+      spacing: {
+        xs: "var(--cuix-spacing-xs)",
+        sm: "var(--cuix-spacing-sm)",
+        md: "var(--cuix-spacing-md)",
+        lg: "var(--cuix-spacing-lg)",
+      },
+      boxShadow: {
+        sm: "var(--cuix-shadow-sm)",
+        md: "var(--cuix-shadow-md)",
+        lg: "var(--cuix-shadow-lg)",
+      },
+      fontSize: {
+        sm: "var(--cuix-font-size-sm)",
+        md: "var(--cuix-font-size-md)",
+        lg: "var(--cuix-font-size-lg)",
+      },
+      fontFamily: {
+        body: "var(--cuix-font-family-body)",
+        heading: "var(--cuix-font-family-heading)",
+      },
+      zIndex: {
+        modal: "var(--cuix-z-index-modal)",
+        tooltip: "var(--cuix-z-index-tooltip)",
       },
       keyframes: {
         "accordion-down": {
