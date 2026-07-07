@@ -1,6 +1,6 @@
 import type * as React from "react";
 
-import { cn } from "@coreuix/lib/utils";
+import { cn } from "@coreuix/utils/cn";
 
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (

@@ -12,9 +12,9 @@
   },
   "aliases": {
     "components": "@coreuix/components",
-    "utils": "@coreuix/lib/utils",
+    "utils": "@coreuix/utils/cn",
     "ui": "@coreuix/components",
-    "lib": "@coreuix/lib",
+    "lib": "@coreuix/utils",
     "hooks": "@coreuix/hooks",
     "theme": "@coreuix/theme"
   },

@@ -1,5 +1,5 @@
 // Utilities
-export { cn } from "@coreuix/lib/utils";
+export { cn } from "@coreuix/utils/cn";
 
 // Components
 export * from "@coreuix/components";

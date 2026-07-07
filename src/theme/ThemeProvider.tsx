@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 
 import { ThemeContext } from "./ThemeContext";
 import { createTheme } from "./createTheme";
-import { applyTheme } from "./cssVariables";
+import { applyTheme } from "./applyTheme";
 import type { CoreUIXTheme, DeepPartial } from "./types";
 
 interface ThemeProviderProps {
