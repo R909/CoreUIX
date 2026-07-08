@@ -1,18 +1,6 @@
 import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
-// This file is published so consuming apps can extend it as a preset:
-//
-//   // tailwind.config.ts in a consuming app
-//   import uiPreset from "@coreuix/ui/tailwind.config";
-//   export default {
-//     presets: [uiPreset],
-//     content: [
-//       "./app/**/*.{ts,tsx}",
-//       "./node_modules/@coreuix/ui/dist/**/*.{js,mjs}",
-//     ],
-//   } satisfies Config;
-
 const config: Omit<Config, "content"> & { content: Config["content"] } = {
   // Tailwind ignores `content` when a config is consumed as a preset, so
   // this has no effect on consuming apps — they must declare their own

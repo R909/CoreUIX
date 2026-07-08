@@ -3,10 +3,10 @@
 import { useEffect, useMemo } from "react";
 import type { ReactNode } from "react";
 
-import { ThemeContext } from "./ThemeContext";
-import { createTheme } from "./createTheme";
-import { applyTheme } from "./applyTheme";
-import type { CoreUIXTheme, DeepPartial } from "./types";
+import { ThemeContext } from "@coreuix/theme/ThemeContext";
+import { createTheme } from "@coreuix/theme/core";
+import { applyRuntimeThemeUpdate } from "@coreuix/theme/utils";
+import type { CoreUIXTheme, DeepPartial } from "@coreuix/theme/models";
 
 interface ThemeProviderProps {
   children: ReactNode;
@@ -20,7 +20,7 @@ export function ThemeProvider({
   const mergedTheme = useMemo(() => createTheme(theme), [theme]);
 
   useEffect(() => {
-    applyTheme(mergedTheme);
+    applyRuntimeThemeUpdate(mergedTheme);
   }, [mergedTheme]);
 
   return (

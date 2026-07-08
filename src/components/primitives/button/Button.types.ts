@@ -3,7 +3,7 @@ import type { VariantProps } from "class-variance-authority";
 
 import type { buttonVariants } from "@coreuix/components/primitives/button/button.variants";
 
-export type ButtonProps = React.ComponentProps<"button"> &
+export type ButtonProps = React.ComponentPropsWithoutRef<"button"> &
   VariantProps<typeof buttonVariants> & {
     asChild?: boolean;
   };

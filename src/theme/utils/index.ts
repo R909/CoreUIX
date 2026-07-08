@@ -1,3 +1,4 @@
-export * from "@coreuix/theme/utils/camelToKebab";
-export * from "@coreuix/theme/utils/color";
+export * from "@coreuix/theme/utils/applyTheme";
 export * from "@coreuix/theme/utils/generateCssVariables";
+export * from "@coreuix/theme/utils/normalize";
+export * from "@coreuix/theme/utils/runtimeUpdate";
