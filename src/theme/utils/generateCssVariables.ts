@@ -1,4 +1,4 @@
-import type { CoreUIXTheme } from "@coreuix/theme/models";
+import type { CoreUIXTheme } from "@/theme/models";
 
 export type DesignTokenMap = Record<string, string>;
 

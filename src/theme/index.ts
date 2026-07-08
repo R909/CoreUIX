@@ -1,15 +1,15 @@
-export * from "@coreuix/theme/ThemeProvider";
-export * from "@coreuix/theme/ThemeContext";
-export * from "@coreuix/theme/useTheme";
-export * from "@coreuix/theme/models";
-export * from "@coreuix/theme/tokens";
+export * from "@/theme/ThemeProvider";
+export * from "@/theme/ThemeContext";
+export * from "@/theme/useTheme";
+export * from "@/theme/models";
+export * from "@/theme/tokens";
 
-export { createTheme, defaultTheme, mergeTheme } from "@coreuix/theme/core";
+export { createTheme, defaultTheme, mergeTheme } from "@/theme/core";
 
 export {
   applyTheme,
   generateCssVariables,
   normalizeTheme,
   applyRuntimeThemeUpdate,
-} from "@coreuix/theme/utils";
-export type { DesignTokenMap } from "@coreuix/theme/utils";
+} from "@/theme/utils";
+export type { DesignTokenMap } from "@/theme/utils";

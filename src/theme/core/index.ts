@@ -1,3 +1,3 @@
-export * from "@coreuix/theme/core/createTheme";
-export * from "@coreuix/theme/core/defaultTheme";
-export * from "@coreuix/theme/core/mergeTheme";
+export * from "@/theme/core/createTheme";
+export * from "@/theme/core/defaultTheme";
+export * from "@/theme/core/mergeTheme";

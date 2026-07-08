@@ -1,1 +1,1 @@
-export * from "@coreuix/components/layout/card";
+export * from "@/components/layout/card";

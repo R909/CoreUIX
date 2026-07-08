@@ -1,3 +1,3 @@
-export * from "@coreuix/utils/cn";
-export * from "@coreuix/utils/deepMerge";
-export * from "@coreuix/utils/createVariants";
+export * from "@/utils/cn";
+export * from "@/utils/deepMerge";
+export * from "@/utils/createVariants";

@@ -1,4 +1,4 @@
-import type { CoreUIXTheme } from "@coreuix/theme/models";
+import type { CoreUIXTheme } from "@/theme/models";
 
 const SHORTHAND_HEX = /^#([a-f\d])([a-f\d])([a-f\d])$/i;
 

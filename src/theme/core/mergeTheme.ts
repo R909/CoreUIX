@@ -1,5 +1,5 @@
-import { deepMerge } from "@coreuix/utils/deepMerge";
-import type { CoreUIXTheme, DeepPartial } from "@coreuix/theme/models";
+import { deepMerge } from "@/utils/deepMerge";
+import type { CoreUIXTheme, DeepPartial } from "@/theme/models";
 
 export function mergeTheme(
   base: CoreUIXTheme,

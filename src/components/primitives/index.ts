@@ -1,2 +1,2 @@
-export * from "@coreuix/components/primitives/button";
-export * from "@coreuix/components/primitives/badge";
+export * from "@/components/primitives/button";
+export * from "@/components/primitives/badge";

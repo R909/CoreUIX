@@ -1,9 +1,9 @@
 // Utilities
-export * from "@coreuix/utils";
+export * from "@/utils";
 
 // Components
-export * from "@coreuix/components";
+export * from "@/components";
 
 // Theme
-export * from "@coreuix/theme";
+export * from "@/theme";
 

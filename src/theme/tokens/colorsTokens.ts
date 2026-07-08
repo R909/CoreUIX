@@ -1,4 +1,4 @@
-import type { CoreUIXTheme } from "@coreuix/theme/models";
+import type { CoreUIXTheme } from "@/theme/models";
 
 export const colors: CoreUIXTheme["colors"] = {
   background: "#ffffff",

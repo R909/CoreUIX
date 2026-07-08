@@ -14,7 +14,7 @@
     "jsx": "preserve",
     "baseUrl": ".",
     "paths": {
-      "@coreuix/*": ["./src/*"]
+      "@/*": ["./src/*"]
     },
     "incremental": true
   },
