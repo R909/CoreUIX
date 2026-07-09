@@ -11,12 +11,12 @@
     "prefix": ""
   },
   "aliases": {
-    "components": "@coreuix/components",
-    "utils": "@coreuix/utils/cn",
-    "ui": "@coreuix/components",
-    "lib": "@coreuix/utils",
-    "hooks": "@coreuix/hooks",
-    "theme": "theme"
+    "components": "@components",
+    "utils": "@utils/cn",
+    "ui": "@components/ui",
+    "lib": "@utils",
+    "hooks": "@hooks",
+    "theme": "@theme"
   },
   "iconLibrary": "lucide"
 }

@@ -25,7 +25,7 @@
   },
   "scripts": {
     "build": "tsup && tailwindcss -i src/styles.css -o dist/styles.css --config tailwind.config.ts --minify",
-      "husky:init": "husky",
+      "prepare":"husky init",
     "add": "shadcn add",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
