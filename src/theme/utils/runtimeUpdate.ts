@@ -1,3 +1,4 @@
+// Runs the full pipeline: normalize the theme, generate CSS variables, apply them.
 import type { CoreUIXTheme } from "@/theme/models";
 import { normalizeTheme } from "@/theme/utils/normalize";
 import { generateCssVariables } from "@/theme/utils/generateCssVariables";

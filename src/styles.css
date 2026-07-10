@@ -1,8 +1,10 @@
+/* CSS variable values for the theme system. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  /* Light theme (default) token values. */
   :root {
     --cuix-colors-background: #ffffff;
     --cuix-colors-foreground: #111827;
@@ -24,19 +26,25 @@
     --cuix-colors-input: #e5e7eb;
     --cuix-colors-ring: #2563eb;
 
+    /* Border radius values. */
     --cuix-radius-sm: 6px;
     --cuix-radius-md: 8px;
     --cuix-radius-lg: 12px;
 
+    /* Spacing scale. */
     --cuix-spacing-xs: 4px;
     --cuix-spacing-sm: 8px;
     --cuix-spacing-md: 16px;
     --cuix-spacing-lg: 24px;
 
+    /* Elevation shadows. */
     --cuix-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --cuix-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --cuix-shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --cuix-shadow-md:
+      0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --cuix-shadow-lg:
+      0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
+    /* Typography scale and font stacks. */
     --cuix-font-size-sm: 14px;
     --cuix-font-size-md: 16px;
     --cuix-font-size-lg: 18px;
@@ -44,13 +52,16 @@
     --cuix-font-family-body: Inter, sans-serif;
     --cuix-font-family-heading: Inter, sans-serif;
 
+    /* Z-index layers for modals and tooltips. */
     --cuix-z-index-modal: 1000;
     --cuix-z-index-tooltip: 1500;
 
+    /* Responsive breakpoints. */
     --cuix-breakpoint-sm: 640px;
     --cuix-breakpoint-md: 768px;
   }
 
+  /* Dark theme colors; other tokens stay the same as the light theme. */
   .dark {
     --cuix-colors-background: #0a0a0a;
     --cuix-colors-foreground: #fafafa;
@@ -73,6 +84,7 @@
     --cuix-colors-ring: #d4d4d4;
   }
 
+  /* Apply the theme colors globally. */
   * {
     @apply border-border;
   }

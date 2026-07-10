@@ -1,3 +1,4 @@
+// Like Partial<T>, but works recursively on nested objects.
 export type DeepPartial<T> = {
   [K in keyof T]?: T[K] extends (...args: unknown[]) => unknown
     ? T[K]

@@ -1,3 +1,4 @@
+// Default box-shadow values.
 import type { CoreUIXTheme } from "@/theme/models";
 
 export const shadow: CoreUIXTheme["shadow"] = {

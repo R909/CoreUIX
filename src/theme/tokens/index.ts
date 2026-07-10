@@ -1,3 +1,4 @@
+// Re-exports all default token values.
 export * from "@/theme/tokens/colorsTokens";
 export * from "@/theme/tokens/typographyTokens";
 export * from "@/theme/tokens/spacingTokens";

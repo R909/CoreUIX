@@ -1,3 +1,4 @@
+// Default breakpoint values.
 import type { CoreUIXTheme } from "@/theme/models";
 
 export const breakpoints: CoreUIXTheme["breakpoints"] = {

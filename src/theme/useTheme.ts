@@ -1,3 +1,4 @@
+// Hook to read the current theme.
 import { useContext } from "react";
 import { ThemeContext } from "@/theme/ThemeContext";
 

@@ -1,3 +1,4 @@
+// Public entry point for the theme system.
 export * from "@/theme/ThemeProvider";
 export * from "@/theme/ThemeContext";
 export * from "@/theme/useTheme";

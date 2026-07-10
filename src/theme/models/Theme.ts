@@ -1,3 +1,4 @@
+// Full shape of the theme object.
 export interface CoreUIXTheme {
   colors: {
     background: string;

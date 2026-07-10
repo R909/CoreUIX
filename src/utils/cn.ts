@@ -1,3 +1,4 @@
+// Combines class names and removes conflicting Tailwind classes.
 import { clsx, type ClassValue } from "clsx";
 import { twMerge } from "tailwind-merge";
 

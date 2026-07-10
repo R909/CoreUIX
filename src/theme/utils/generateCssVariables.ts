@@ -1,7 +1,10 @@
+// Converts the theme object into --cuix-* CSS variables.
 import type { CoreUIXTheme } from "@/theme/models";
 
+// Flat map of token keys to values, e.g. "colors.primary" -> "#2563eb".
 export type DesignTokenMap = Record<string, string>;
 
+// Maps each theme section to its CSS variable name prefix.
 const SECTION_CSS_PREFIX: Record<string, string> = {
   colors: "colors",
   radius: "radius",
@@ -13,14 +16,17 @@ const SECTION_CSS_PREFIX: Record<string, string> = {
   "typography.fontSize": "font-size",
 };
 
+// Token keys that map straight to a specific variable name.
 const DIRECT_CSS_NAME: Record<string, string> = {
   "typography.lineHeight": "line-height",
 };
 
+// Converts camelCase to kebab-case (e.g. primaryForeground -> primary-foreground).
 function camelToKebab(key: string): string {
   return key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
+// Builds the final CSS variable name for a token key.
 function toCssVariableName(tokenKey: string): string {
   const directName = DIRECT_CSS_NAME[tokenKey];
   if (directName) {
@@ -35,6 +41,7 @@ function toCssVariableName(tokenKey: string): string {
   return `--cuix-${prefix}-${camelToKebab(key)}`;
 }
 
+// Flattens the nested theme object into dot-path keyed entries.
 function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   const tokens: DesignTokenMap = {};
 
@@ -75,10 +82,14 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   return tokens;
 }
 
+// Flattens the theme and converts each key to its CSS variable name.
 export function generateCssVariables(theme: CoreUIXTheme): DesignTokenMap {
   const tokens = flattenTheme(theme);
 
   return Object.fromEntries(
-    Object.entries(tokens).map(([tokenKey, value]) => [toCssVariableName(tokenKey), value])
+    Object.entries(tokens).map(([tokenKey, value]) => [
+      toCssVariableName(tokenKey),
+      value,
+    ]),
   );
 }

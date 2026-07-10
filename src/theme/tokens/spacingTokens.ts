@@ -1,3 +1,4 @@
+// Default spacing scale.
 import type { CoreUIXTheme } from "@/theme/models";
 
 export const spacing: CoreUIXTheme["spacing"] = {

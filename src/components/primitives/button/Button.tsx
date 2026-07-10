@@ -1,3 +1,4 @@
+// Button component for clickable actions.
 import { Slot } from "@radix-ui/react-slot";
 
 import { cn } from "@/utils/cn";
@@ -5,7 +6,14 @@ import { cn } from "@/utils/cn";
 import { buttonVariants } from "@/components/primitives/button/button.variants";
 import type { ButtonProps } from "@/components/primitives/button/Button.types";
 
-const Button = ({ className, variant, size, asChild = false, ...props }: ButtonProps) => {
+// asChild lets the button render as a different element (e.g. a Link).
+const Button = ({
+  className,
+  variant,
+  size,
+  asChild = false,
+  ...props
+}: ButtonProps) => {
   const Comp = asChild ? Slot : "button";
 
   return (
@@ -17,4 +25,4 @@ const Button = ({ className, variant, size, asChild = false, ...props }: ButtonP
   );
 };
 
-export  { Button };
+export { Button };

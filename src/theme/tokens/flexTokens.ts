@@ -1,7 +1,8 @@
+// Ready-to-use flex layout classes.
 import type { CoreUIXTheme } from "@/theme/models";
 
 export const flex: CoreUIXTheme["flex"] = {
- row: "flex flex-row",
+  row: "flex flex-row",
   col: "flex flex-col",
   center: "flex items-center justify-center",
   between: "flex items-center justify-between",
@@ -11,6 +12,6 @@ export const flex: CoreUIXTheme["flex"] = {
   end: "flex items-center justify-end",
   wrap: "flex flex-wrap",
   nowrap: "flex flex-nowrap",
-   inline: "inline-flex",
+  inline: "inline-flex",
   inlineCenter: "inline-flex items-center justify-center",
 };

@@ -10,15 +10,15 @@ import type { CoreUIXTheme, DeepPartial } from "@/theme/models";
 
 interface ThemeProviderProps {
   children: ReactNode;
+  // Optional theme overrides, merged with the default theme.
   theme?: DeepPartial<CoreUIXTheme>;
 }
 
-export function ThemeProvider({
-  children,
-  theme = {},
-}: ThemeProviderProps) {
+// Provides the merged theme to the app and syncs it to CSS variables.
+export function ThemeProvider({ children, theme = {} }: ThemeProviderProps) {
   const mergedTheme = useMemo(() => createTheme(theme), [theme]);
 
+  // Update CSS variables whenever the theme changes.
   useEffect(() => {
     applyRuntimeThemeUpdate(mergedTheme);
   }, [mergedTheme]);

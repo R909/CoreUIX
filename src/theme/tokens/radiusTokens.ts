@@ -1,3 +1,4 @@
+// Default border-radius values.
 import type { CoreUIXTheme } from "@/theme/models";
 
 export const radius: CoreUIXTheme["radius"] = {

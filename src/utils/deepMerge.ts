@@ -1,3 +1,6 @@
+// Recursively merges two plain objects.
+
+// Checks if a value is a plain object (not an array, null, or a class instance).
 function isPlainObject(value: unknown): value is Record<string, unknown> {
   return (
     typeof value === "object" &&
@@ -7,9 +10,10 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
   );
 }
 
+// Merges source into target; if both sides have a plain object for the same key, merges recursively.
 export function deepMerge<T extends Record<string, unknown>>(
   target: T,
-  source: Record<string, unknown>
+  source: Record<string, unknown>,
 ): T {
   const result: Record<string, unknown> = { ...target };
 
