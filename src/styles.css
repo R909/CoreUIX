@@ -25,6 +25,7 @@
     --cuix-colors-border: #e5e7eb;
     --cuix-colors-input: #e5e7eb;
     --cuix-colors-ring: #2563eb;
+    --cuix-colors-transparent: transparent;
 
     /* Border radius values. */
     --cuix-radius-sm: 6px;
@@ -36,6 +37,7 @@
     --cuix-spacing-sm: 8px;
     --cuix-spacing-md: 16px;
     --cuix-spacing-lg: 24px;
+    --cuix-spacing-tight: 6px;
 
     /* Elevation shadows. */
     --cuix-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
@@ -45,12 +47,21 @@
       0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
 
     /* Typography scale and font stacks. */
+    --cuix-font-size-xs: 12px;
     --cuix-font-size-sm: 14px;
     --cuix-font-size-md: 16px;
     --cuix-font-size-lg: 18px;
 
     --cuix-font-family-body: Inter, sans-serif;
     --cuix-font-family-heading: Inter, sans-serif;
+
+    --cuix-font-weight-medium: 500;
+    --cuix-font-weight-semibold: 600;
+
+    --cuix-letter-spacing-normal: 0em;
+    --cuix-letter-spacing-tight: -0.025em;
+
+    --cuix-line-height-tight: 1;
 
     /* Z-index layers for modals and tooltips. */
     --cuix-z-index-modal: 1000;
@@ -59,6 +70,22 @@
     /* Responsive breakpoints. */
     --cuix-breakpoint-sm: 640px;
     --cuix-breakpoint-md: 768px;
+
+    /* Width scale. */
+    --cuix-width-full: 100%;
+    --cuix-width-screen: 100vw;
+    --cuix-width-auto: auto;
+    --cuix-width-fit: fit-content;
+    --cuix-width-min: min-content;
+    --cuix-width-max: max-content;
+
+    /* Height scale. */
+    --cuix-height-full: 100%;
+    --cuix-height-screen: 100vh;
+    --cuix-height-auto: auto;
+    --cuix-height-fit: fit-content;
+    --cuix-height-min: min-content;
+    --cuix-height-max: max-content;
   }
 
   /* Dark theme colors; other tokens stay the same as the light theme. */

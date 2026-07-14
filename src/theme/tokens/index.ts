@@ -7,3 +7,5 @@ export * from "@/theme/tokens/shadowsTokens";
 export * from "@/theme/tokens/breakpointsTokens";
 export * from "@/theme/tokens/flexTokens";
 export * from "@/theme/tokens/zIndexTokens";
+export * from "@/theme/tokens/widthTokens";
+export * from "@/theme/tokens/heightTokens";

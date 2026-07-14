@@ -14,4 +14,5 @@ export const flex: CoreUIXTheme["flex"] = {
   nowrap: "flex flex-nowrap",
   inline: "inline-flex",
   inlineCenter: "inline-flex items-center justify-center",
+  itemsCenter: "flex items-center",
 };

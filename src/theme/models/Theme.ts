@@ -29,6 +29,8 @@ export interface CoreUIXTheme {
 
     card: string;
     cardForeground: string;
+
+    transparent: string;
   };
 
   radius: {
@@ -42,6 +44,7 @@ export interface CoreUIXTheme {
     sm: string;
     md: string;
     lg: string;
+    tight: string;
   };
 
   shadow: {
@@ -60,17 +63,45 @@ export interface CoreUIXTheme {
     md: string;
   };
 
+  width: {
+    full: string;
+    screen: string;
+    auto: string;
+    fit: string;
+    min: string;
+    max: string;
+  };
+
+  height: {
+    full: string;
+    screen: string;
+    auto: string;
+    fit: string;
+    min: string;
+    max: string;
+  };
+
   typography: {
     fontFamily: {
       body: string;
       heading: string;
     };
     fontSize: {
+      xs: string;
       sm: string;
       md: string;
       lg: string;
     };
+    fontWeight: {
+      medium: string;
+      semibold: string;
+    };
+    letterSpacing: {
+      normal: string;
+      tight: string;
+    };
     lineHeight: string;
+    lineHeightTight: string;
   };
   flex: {
     row: string;
@@ -85,5 +116,6 @@ export interface CoreUIXTheme {
     nowrap: string;
     inline: string;
     inlineCenter: string;
+    itemsCenter: string;
   };
 }

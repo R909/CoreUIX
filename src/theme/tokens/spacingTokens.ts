@@ -6,4 +6,5 @@ export const spacing: CoreUIXTheme["spacing"] = {
   sm: "8px",
   md: "16px",
   lg: "24px",
+  tight: "6px",
 };

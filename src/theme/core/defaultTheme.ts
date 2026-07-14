@@ -9,6 +9,8 @@ import {
   breakpoints,
   flex,
   zIndex,
+  width,
+  height,
 } from "@/theme/tokens";
 
 export const defaultTheme: CoreUIXTheme = {
@@ -20,4 +22,6 @@ export const defaultTheme: CoreUIXTheme = {
   breakpoints,
   flex,
   zIndex,
+  width,
+  height,
 };

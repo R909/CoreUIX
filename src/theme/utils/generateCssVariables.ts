@@ -1,95 +1,109 @@
 // Converts the theme object into --cuix-* CSS variables.
 import type { CoreUIXTheme } from "@/theme/models";
 
-// Flat map of token keys to values, e.g. "colors.primary" -> "#2563eb".
+// Flat map of CSS variable names to values, e.g. "--cuix-colors-primary" -> "#2563eb".
 export type DesignTokenMap = Record<string, string>;
 
-// Maps each theme section to its CSS variable name prefix.
-const SECTION_CSS_PREFIX: Record<string, string> = {
+// Top-level theme sections that flatten straight to `--cuix-<prefix>-<key>` vars.
+// Typed against `keyof CoreUIXTheme` so adding a new theme section that isn't listed
+// here (and isn't in EXCLUDED_SECTIONS) is caught below instead of silently dropped.
+const FLAT_SECTIONS = [
+  "colors",
+  "radius",
+  "spacing",
+  "shadow",
+  "zIndex",
+  "breakpoints",
+  "width",
+  "height",
+] as const satisfies readonly (keyof CoreUIXTheme)[];
+
+// CSS variable name prefix for each flat section. Required (not optional) so a
+// missing entry is a compile error, not a runtime `--cuix-undefined-*` variable.
+const SECTION_CSS_PREFIX: Record<(typeof FLAT_SECTIONS)[number], string> = {
   colors: "colors",
   radius: "radius",
   spacing: "spacing",
   shadow: "shadow",
   zIndex: "z-index",
   breakpoints: "breakpoint",
-  "typography.fontFamily": "font-family",
-  "typography.fontSize": "font-size",
+  width: "width",
+  height: "height",
 };
 
-// Token keys that map straight to a specific variable name.
-const DIRECT_CSS_NAME: Record<string, string> = {
-  "typography.lineHeight": "line-height",
+// Nested `typography.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.
+const TYPOGRAPHY_SECTIONS = [
+  "fontFamily",
+  "fontSize",
+  "fontWeight",
+  "letterSpacing",
+] as const satisfies readonly (keyof CoreUIXTheme["typography"])[];
+
+const TYPOGRAPHY_CSS_PREFIX: Record<
+  (typeof TYPOGRAPHY_SECTIONS)[number],
+  string
+> = {
+  fontFamily: "font-family",
+  fontSize: "font-size",
+  fontWeight: "font-weight",
+  letterSpacing: "letter-spacing",
 };
+
+// Theme sections deliberately excluded from CSS-variable generation: `flex` holds
+// pre-composed Tailwind class strings (e.g. "flex flex-row"), not CSS values, so
+// it isn't meaningful as a `var()` target — components read it via useTheme() instead.
+const EXCLUDED_SECTIONS = [
+  "flex",
+] as const satisfies readonly (keyof CoreUIXTheme)[];
 
 // Converts camelCase to kebab-case (e.g. primaryForeground -> primary-foreground).
 function camelToKebab(key: string): string {
   return key.replace(/([a-z0-9])([A-Z])/g, "$1-$2").toLowerCase();
 }
 
-// Builds the final CSS variable name for a token key.
-function toCssVariableName(tokenKey: string): string {
-  const directName = DIRECT_CSS_NAME[tokenKey];
-  if (directName) {
-    return `--cuix-${directName}`;
-  }
-
-  const lastDot = tokenKey.lastIndexOf(".");
-  const section = tokenKey.slice(0, lastDot);
-  const key = tokenKey.slice(lastDot + 1);
-  const prefix = SECTION_CSS_PREFIX[section];
-
-  return `--cuix-${prefix}-${camelToKebab(key)}`;
-}
-
-// Flattens the nested theme object into dot-path keyed entries.
+// Flattens the nested theme object directly into `--cuix-*` CSS variable entries.
 function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   const tokens: DesignTokenMap = {};
 
-  Object.entries(theme.colors).forEach(([key, value]) => {
-    tokens[`colors.${key}`] = value;
-  });
+  for (const section of FLAT_SECTIONS) {
+    const prefix = SECTION_CSS_PREFIX[section];
+    Object.entries(theme[section]).forEach(([key, value]) => {
+      tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+    });
+  }
 
-  Object.entries(theme.radius).forEach(([key, value]) => {
-    tokens[`radius.${key}`] = value;
-  });
+  for (const section of TYPOGRAPHY_SECTIONS) {
+    const prefix = TYPOGRAPHY_CSS_PREFIX[section];
+    Object.entries(theme.typography[section]).forEach(([key, value]) => {
+      tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+    });
+  }
 
-  Object.entries(theme.spacing).forEach(([key, value]) => {
-    tokens[`spacing.${key}`] = value;
-  });
+  tokens["--cuix-line-height"] = theme.typography.lineHeight;
+  tokens["--cuix-line-height-tight"] = theme.typography.lineHeightTight;
 
-  Object.entries(theme.shadow).forEach(([key, value]) => {
-    tokens[`shadow.${key}`] = value;
-  });
-
-  Object.entries(theme.zIndex).forEach(([key, value]) => {
-    tokens[`zIndex.${key}`] = value;
-  });
-
-  Object.entries(theme.breakpoints).forEach(([key, value]) => {
-    tokens[`breakpoints.${key}`] = value;
-  });
-
-  Object.entries(theme.typography.fontFamily).forEach(([key, value]) => {
-    tokens[`typography.fontFamily.${key}`] = value;
-  });
-
-  Object.entries(theme.typography.fontSize).forEach(([key, value]) => {
-    tokens[`typography.fontSize.${key}`] = value;
-  });
-
-  tokens["typography.lineHeight"] = theme.typography.lineHeight;
+  // Fails loudly if a new top-level theme section is added to CoreUIXTheme without
+  // wiring it into FLAT_SECTIONS or EXCLUDED_SECTIONS above — this is what let `flex`
+  // silently fall through before instead of surfacing as an error.
+  const accountedFor = new Set<string>([
+    ...FLAT_SECTIONS,
+    ...EXCLUDED_SECTIONS,
+    "typography",
+  ]);
+  const unhandledSections = (
+    Object.keys(theme) as (keyof CoreUIXTheme)[]
+  ).filter((section) => !accountedFor.has(section));
+  if (unhandledSections.length > 0) {
+    throw new Error(
+      `generateCssVariables: unhandled theme section(s): ${unhandledSections.join(", ")}. ` +
+        "Add them to FLAT_SECTIONS/TYPOGRAPHY_SECTIONS or EXCLUDED_SECTIONS in generateCssVariables.ts.",
+    );
+  }
 
   return tokens;
 }
 
-// Flattens the theme and converts each key to its CSS variable name.
+// Flattens the theme into a `--cuix-*` CSS variable map.
 export function generateCssVariables(theme: CoreUIXTheme): DesignTokenMap {
-  const tokens = flattenTheme(theme);
-
-  return Object.fromEntries(
-    Object.entries(tokens).map(([tokenKey, value]) => [
-      toCssVariableName(tokenKey),
-      value,
-    ]),
-  );
+  return flattenTheme(theme);
 }

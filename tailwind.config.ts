@@ -58,6 +58,8 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
           DEFAULT: "var(--cuix-colors-card)",
           foreground: "var(--cuix-colors-card-foreground)",
         },
+
+        transparent: "var(--cuix-colors-transparent)",
       },
       borderRadius: {
         lg: "var(--cuix-radius-lg)",
@@ -69,6 +71,7 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
         sm: "var(--cuix-spacing-sm)",
         md: "var(--cuix-spacing-md)",
         lg: "var(--cuix-spacing-lg)",
+        tight: "var(--cuix-spacing-tight)",
       },
       boxShadow: {
         sm: "var(--cuix-shadow-sm)",
@@ -76,6 +79,7 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
         lg: "var(--cuix-shadow-lg)",
       },
       fontSize: {
+        xs: "var(--cuix-font-size-xs)",
         sm: "var(--cuix-font-size-sm)",
         md: "var(--cuix-font-size-md)",
         lg: "var(--cuix-font-size-lg)",
@@ -84,9 +88,36 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
         body: "var(--cuix-font-family-body)",
         heading: "var(--cuix-font-family-heading)",
       },
+      fontWeight: {
+        medium: "var(--cuix-font-weight-medium)",
+        semibold: "var(--cuix-font-weight-semibold)",
+      },
+      letterSpacing: {
+        normal: "var(--cuix-letter-spacing-normal)",
+        tight: "var(--cuix-letter-spacing-tight)",
+      },
+      lineHeight: {
+        tight: "var(--cuix-line-height-tight)",
+      },
       zIndex: {
         modal: "var(--cuix-z-index-modal)",
         tooltip: "var(--cuix-z-index-tooltip)",
+      },
+      width: {
+        full: "var(--cuix-width-full)",
+        screen: "var(--cuix-width-screen)",
+        auto: "var(--cuix-width-auto)",
+        fit: "var(--cuix-width-fit)",
+        min: "var(--cuix-width-min)",
+        max: "var(--cuix-width-max)",
+      },
+      height: {
+        full: "var(--cuix-height-full)",
+        screen: "var(--cuix-height-screen)",
+        auto: "var(--cuix-height-auto)",
+        fit: "var(--cuix-height-fit)",
+        min: "var(--cuix-height-min)",
+        max: "var(--cuix-height-max)",
       },
       keyframes: {
         "accordion-down": {

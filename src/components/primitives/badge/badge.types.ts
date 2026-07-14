@@ -5,7 +5,7 @@ import type { VariantProps } from "class-variance-authority";
 import type { badgeVariants } from "@/components/primitives/badge/badge.variants";
 
 // Span props plus the badge's variant props and asChild.
-export type BadgeProps = React.HTMLAttributes<HTMLSpanElement> &
+export type BadgeProps = React.ComponentPropsWithoutRef<"span"> &
   VariantProps<typeof badgeVariants> & {
     asChild?: boolean;
   };
