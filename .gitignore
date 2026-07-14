@@ -36,7 +36,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-*.md
  
 ### NextJS ###
 # dependencies
@@ -76,5 +75,4 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-*.md
 dist/
