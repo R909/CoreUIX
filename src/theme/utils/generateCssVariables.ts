@@ -16,6 +16,7 @@ const FLAT_SECTIONS = [
   "breakpoints",
   "width",
   "height",
+  "sidebar",
 ] as const satisfies readonly (keyof CoreUIXTheme)[];
 
 // CSS variable name prefix for each flat section. Required (not optional) so a
@@ -29,6 +30,7 @@ const SECTION_CSS_PREFIX: Record<(typeof FLAT_SECTIONS)[number], string> = {
   breakpoints: "breakpoint",
   width: "width",
   height: "height",
+  sidebar: "sidebar",
 };
 
 // Nested `typography.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.

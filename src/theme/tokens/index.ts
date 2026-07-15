@@ -9,3 +9,4 @@ export * from "@theme/tokens/flexTokens";
 export * from "@theme/tokens/zIndexTokens";
 export * from "@theme/tokens/widthTokens";
 export * from "@theme/tokens/heightTokens";
+export * from "@theme/tokens/sidebarTokens";

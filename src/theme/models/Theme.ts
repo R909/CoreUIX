@@ -118,4 +118,15 @@ export interface CoreUIXTheme {
     inlineCenter: string;
     itemsCenter: string;
   };
+
+  sidebar: {
+    background: string;
+    foreground: string;
+    primary: string;
+    primaryForeground: string;
+    accent: string;
+    accentForeground: string;
+    border: string;
+    ring: string;
+  };
 }

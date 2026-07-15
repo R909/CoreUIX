@@ -11,6 +11,7 @@ import {
   zIndex,
   width,
   height,
+  sidebar,
 } from "@theme/tokens";
 
 export const defaultTheme: CoreUIXTheme = {
@@ -24,4 +25,5 @@ export const defaultTheme: CoreUIXTheme = {
   zIndex,
   width,
   height,
+  sidebar,
 };
