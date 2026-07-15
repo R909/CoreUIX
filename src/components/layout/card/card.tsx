@@ -1,7 +1,7 @@
 // Card component and its sub-parts: header, title, description, content, footer.
 import * as React from "react";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@utils/cn";
 
 import {
   cardVariants,
@@ -10,7 +10,7 @@ import {
   cardDescriptionVariants,
   cardContentVariants,
   cardFooterVariants,
-} from "@/components/layout/card/card.variants";
+} from "@components/layout/card/card.variants";
 import type {
   CardProps,
   CardHeaderProps,
@@ -18,7 +18,7 @@ import type {
   CardDescriptionProps,
   CardContentProps,
   CardFooterProps,
-} from "@/components/layout/card/card.types";
+} from "@components/layout/card/card.types";
 
 // Outer card container.
 const Card = React.forwardRef<HTMLDivElement, CardProps>(

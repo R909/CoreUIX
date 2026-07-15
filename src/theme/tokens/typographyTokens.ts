@@ -1,5 +1,5 @@
 // Default font families, sizes, and line height.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const typography: CoreUIXTheme["typography"] = {
   fontFamily: {

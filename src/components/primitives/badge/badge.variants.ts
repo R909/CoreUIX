@@ -1,7 +1,7 @@
 // Style variants for Badge, using the theme's --cuix-* CSS variables.
 import { cva } from "class-variance-authority";
 
-import { flex } from "@/theme/tokens";
+import { flex } from "@theme/tokens";
 
 // Base classes apply to every badge; `variant` sets the color style.
 export const badgeVariants = cva(

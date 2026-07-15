@@ -1,10 +1,10 @@
 // Public entry point for @coreuix/ui.
 
 // Utilities
-export * from "@/utils";
+export * from "@utils/index";
 
 // Components
-export * from "@/components";
+export * from "@components/index";
 
 // Theme
-export * from "@/theme";
+export * from "@theme/index";

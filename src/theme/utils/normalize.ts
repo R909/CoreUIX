@@ -1,5 +1,5 @@
 // Normalizes color values before generating CSS variables.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 // Matches shorthand hex colors like #fff.
 const SHORTHAND_HEX = /^#([a-f\d])([a-f\d])([a-f\d])$/i;

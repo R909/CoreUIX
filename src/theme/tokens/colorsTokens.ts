@@ -1,5 +1,5 @@
 // Default color values for the light theme. Dark theme colors live in src/styles.css.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const colors: CoreUIXTheme["colors"] = {
   background: "#ffffff",

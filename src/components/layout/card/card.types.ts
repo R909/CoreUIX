@@ -9,7 +9,7 @@ import type {
   cardDescriptionVariants,
   cardContentVariants,
   cardFooterVariants,
-} from "@/components/layout/card/card.variants";
+} from "@components/layout/card/card.variants";
 
 export type CardProps = React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof cardVariants>;

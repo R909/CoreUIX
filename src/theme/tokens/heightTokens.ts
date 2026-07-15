@@ -1,5 +1,5 @@
 // Default height values.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const height: CoreUIXTheme["height"] = {
   full: "100%",

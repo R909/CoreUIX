@@ -1,5 +1,5 @@
 // Combines all default tokens into the full theme object.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 import {
   colors,
   radius,
@@ -11,7 +11,7 @@ import {
   zIndex,
   width,
   height,
-} from "@/theme/tokens";
+} from "@theme/tokens";
 
 export const defaultTheme: CoreUIXTheme = {
   colors,

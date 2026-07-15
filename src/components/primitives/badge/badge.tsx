@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
-import { cn } from "@/utils/cn";
+import { cn } from "@utils/cn";
 import { badgeVariants } from "./badge.variants";
 import type { BadgeProps } from "./badge.types";
 

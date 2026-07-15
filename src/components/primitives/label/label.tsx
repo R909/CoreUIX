@@ -2,10 +2,10 @@
 import * as React from "react";
 import * as LabelPrimitive from "@radix-ui/react-label";
 
-import { cn } from "@/utils/cn";
+import { cn } from "@utils/cn";
 
-import { labelVariants } from "@/components/primitives/label/label.variants";
-import type { LabelProps } from "@/components/primitives/label/label.types";
+import { labelVariants } from "@components/primitives/label/label.variants";
+import type { LabelProps } from "@components/primitives/label/label.types";
 
 const Label = React.forwardRef<
   React.ElementRef<typeof LabelPrimitive.Root>,

@@ -1,7 +1,7 @@
 // Style variants for Button, using the theme's --cuix-* CSS variables.
 import { cva } from "class-variance-authority";
 
-import { flex } from "@/theme/tokens";
+import { flex } from "@theme/tokens";
 
 // Base classes apply to every button; `variant` sets the color style, `size` sets dimensions.
 export const buttonVariants = cva(

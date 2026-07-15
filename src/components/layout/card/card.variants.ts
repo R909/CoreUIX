@@ -1,7 +1,7 @@
 // Style variants for Card and its sub-parts, using the theme's --cuix-* CSS variables.
 import { cva } from "class-variance-authority";
 
-import { flex } from "@/theme/tokens";
+import { flex } from "@theme/tokens";
 
 // Outer card container.
 export const cardVariants = cva(

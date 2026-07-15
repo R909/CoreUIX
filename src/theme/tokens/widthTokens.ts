@@ -1,5 +1,5 @@
 // Default width values.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const width: CoreUIXTheme["width"] = {
   full: "100%",

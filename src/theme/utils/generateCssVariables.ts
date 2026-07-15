@@ -1,5 +1,5 @@
 // Converts the theme object into --cuix-* CSS variables.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 // Flat map of CSS variable names to values, e.g. "--cuix-colors-primary" -> "#2563eb".
 export type DesignTokenMap = Record<string, string>;

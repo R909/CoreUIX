@@ -1,5 +1,5 @@
 // Ready-to-use flex layout classes.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const flex: CoreUIXTheme["flex"] = {
   row: "flex flex-row",

@@ -32,7 +32,7 @@ export default defineConfig(
     files: ["**/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
-        projectService: true,
+        project: "./tsconfig.json",
         tsconfigRootDir: import.meta.dirname,
       },
       globals: { ...globals.browser, ...globals.node },
@@ -41,5 +41,5 @@ export default defineConfig(
       "react/prop-types": "off",
       "@typescript-eslint/consistent-type-imports": "warn",
     },
-  }
+  },
 );

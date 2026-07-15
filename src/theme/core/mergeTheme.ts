@@ -1,6 +1,6 @@
 // Deep-merges a theme override into the base theme.
-import { deepMerge } from "@/utils/deepMerge";
-import type { CoreUIXTheme, DeepPartial } from "@/theme/models";
+import { deepMerge } from "@utils/deepMerge";
+import type { CoreUIXTheme, DeepPartial } from "@theme/models";
 
 export function mergeTheme(
   base: CoreUIXTheme,

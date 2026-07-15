@@ -7,7 +7,7 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
   // `content` array. Kept here only for ESLint's tailwindcss plugin, which
   // needs a resolvable config when linting this repo's own source files.
   content: ["./src/**/*.{ts,tsx}"],
-  darkMode: "class",
+  darkMode: ["class", "class"],
   theme: {
     container: {
       center: true,
@@ -23,43 +23,45 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
         ring: "var(--cuix-colors-ring)",
         background: "var(--cuix-colors-background)",
         foreground: "var(--cuix-colors-foreground)",
-
         primary: {
           DEFAULT: "var(--cuix-colors-primary)",
           foreground: "var(--cuix-colors-primary-foreground)",
         },
-
         secondary: {
           DEFAULT: "var(--cuix-colors-secondary)",
           foreground: "var(--cuix-colors-secondary-foreground)",
         },
-
         destructive: {
           DEFAULT: "var(--cuix-colors-destructive)",
           foreground: "var(--cuix-colors-destructive-foreground)",
         },
-
         muted: {
           DEFAULT: "var(--cuix-colors-muted)",
           foreground: "var(--cuix-colors-muted-foreground)",
         },
-
         accent: {
           DEFAULT: "var(--cuix-colors-accent)",
           foreground: "var(--cuix-colors-accent-foreground)",
         },
-
         popover: {
           DEFAULT: "var(--cuix-colors-popover)",
           foreground: "var(--cuix-colors-popover-foreground)",
         },
-
         card: {
           DEFAULT: "var(--cuix-colors-card)",
           foreground: "var(--cuix-colors-card-foreground)",
         },
-
         transparent: "var(--cuix-colors-transparent)",
+        sidebar: {
+          DEFAULT: "hsl(var(--sidebar-background))",
+          foreground: "hsl(var(--sidebar-foreground))",
+          primary: "hsl(var(--sidebar-primary))",
+          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
+          accent: "hsl(var(--sidebar-accent))",
+          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
+          border: "hsl(var(--sidebar-border))",
+          ring: "hsl(var(--sidebar-ring))",
+        },
       },
       borderRadius: {
         lg: "var(--cuix-radius-lg)",
@@ -121,12 +123,20 @@ const config: Omit<Config, "content"> & { content: Config["content"] } = {
       },
       keyframes: {
         "accordion-down": {
-          from: { height: "0" },
-          to: { height: "var(--radix-accordion-content-height)" },
+          from: {
+            height: "0",
+          },
+          to: {
+            height: "var(--radix-accordion-content-height)",
+          },
         },
         "accordion-up": {
-          from: { height: "var(--radix-accordion-content-height)" },
-          to: { height: "0" },
+          from: {
+            height: "var(--radix-accordion-content-height)",
+          },
+          to: {
+            height: "0",
+          },
         },
       },
       animation: {

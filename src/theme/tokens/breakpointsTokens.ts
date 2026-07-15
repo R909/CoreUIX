@@ -1,5 +1,5 @@
 // Default breakpoint values.
-import type { CoreUIXTheme } from "@/theme/models";
+import type { CoreUIXTheme } from "@theme/models";
 
 export const breakpoints: CoreUIXTheme["breakpoints"] = {
   sm: "640px",

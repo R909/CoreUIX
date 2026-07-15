@@ -2,9 +2,9 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 
-import { cn } from "@/utils/cn";
-import { buttonVariants } from "@/components/primitives/button/button.variants";
-import type { ButtonProps } from "@/components/primitives/button/button.types";
+import { cn } from "@utils/cn";
+import { buttonVariants } from "@components/primitives/button/button.variants";
+import type { ButtonProps } from "@components/primitives/button/button.types";
 
 // asChild lets the button render as a different element (e.g. a Link).
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
