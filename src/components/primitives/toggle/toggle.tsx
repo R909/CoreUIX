@@ -8,9 +8,9 @@ import type { ToggleProps } from "@components/primitives/toggle/toggle.types";
 
 const Toggle: React.ForwardRefExoticComponent<
   ToggleProps &
-    React.RefAttributes<React.ElementRef<typeof TogglePrimitive.Root>>
+    React.RefAttributes<React.ComponentRef<typeof TogglePrimitive.Root>>
 > = React.forwardRef<
-  React.ElementRef<typeof TogglePrimitive.Root>,
+  React.ComponentRef<typeof TogglePrimitive.Root>,
   ToggleProps
 >(({ className, variant, size, ...props }: ToggleProps, ref) => (
   <TogglePrimitive.Root

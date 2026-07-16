@@ -283,9 +283,9 @@ Sidebar.displayName = "Sidebar";
 
 const SidebarTrigger: React.ForwardRefExoticComponent<
   React.ComponentProps<typeof Button> &
-    React.RefAttributes<React.ElementRef<typeof Button>>
+    React.RefAttributes<React.ComponentRef<typeof Button>>
 > = React.forwardRef<
-  React.ElementRef<typeof Button>,
+  React.ComponentRef<typeof Button>,
   React.ComponentProps<typeof Button>
 >(
   (
@@ -366,9 +366,9 @@ SidebarInset.displayName = "SidebarInset";
 
 const SidebarInput: React.ForwardRefExoticComponent<
   React.ComponentProps<typeof Input> &
-    React.RefAttributes<React.ElementRef<typeof Input>>
+    React.RefAttributes<React.ComponentRef<typeof Input>>
 > = React.forwardRef<
-  React.ElementRef<typeof Input>,
+  React.ComponentRef<typeof Input>,
   React.ComponentProps<typeof Input>
 >(({ className, ...props }: React.ComponentProps<typeof Input>, ref) => {
   return (
@@ -419,9 +419,9 @@ SidebarFooter.displayName = "SidebarFooter";
 
 const SidebarSeparator: React.ForwardRefExoticComponent<
   React.ComponentProps<typeof Separator> &
-    React.RefAttributes<React.ElementRef<typeof Separator>>
+    React.RefAttributes<React.ComponentRef<typeof Separator>>
 > = React.forwardRef<
-  React.ElementRef<typeof Separator>,
+  React.ComponentRef<typeof Separator>,
   React.ComponentProps<typeof Separator>
 >(({ className, ...props }: React.ComponentProps<typeof Separator>, ref) => {
   return (

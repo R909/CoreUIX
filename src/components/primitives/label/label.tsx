@@ -8,17 +8,19 @@ import { labelVariants } from "@components/primitives/label/label.variants";
 import type { LabelProps } from "@components/primitives/label/label.types";
 
 const Label: React.ForwardRefExoticComponent<
-  LabelProps & React.RefAttributes<React.ElementRef<typeof LabelPrimitive.Root>>
-> = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, LabelProps>(
-  ({ className, ...props }: LabelProps, ref) => (
-    <LabelPrimitive.Root
-      ref={ref}
-      data-slot="label"
-      className={cn(labelVariants(), className)}
-      {...props}
-    />
-  ),
-);
+  LabelProps &
+    React.RefAttributes<React.ComponentRef<typeof LabelPrimitive.Root>>
+> = React.forwardRef<
+  React.ComponentRef<typeof LabelPrimitive.Root>,
+  LabelProps
+>(({ className, ...props }: LabelProps, ref) => (
+  <LabelPrimitive.Root
+    ref={ref}
+    data-slot="label"
+    className={cn(labelVariants(), className)}
+    {...props}
+  />
+));
 Label.displayName = LabelPrimitive.Root.displayName;
 
 export { Label };

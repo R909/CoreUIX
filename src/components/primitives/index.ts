@@ -5,3 +5,5 @@ export * from "@components/primitives/input";
 export * from "@components/primitives/label";
 export * from "@components/primitives/textarea";
 export * from "@components/primitives/toggle";
+export * from "@components/primitives/command";
+export * from "@components/primitives/popover";

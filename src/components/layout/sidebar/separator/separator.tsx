@@ -5,9 +5,9 @@ import { cn } from "@utils/cn";
 
 const Separator: React.ForwardRefExoticComponent<
   React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root> &
-    React.RefAttributes<React.ElementRef<typeof SeparatorPrimitive.Root>>
+    React.RefAttributes<React.ComponentRef<typeof SeparatorPrimitive.Root>>
 > = React.forwardRef<
-  React.ElementRef<typeof SeparatorPrimitive.Root>,
+  React.ComponentRef<typeof SeparatorPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof SeparatorPrimitive.Root>
 >(
   (

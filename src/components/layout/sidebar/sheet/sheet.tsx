@@ -18,9 +18,9 @@ const SheetPortal: typeof SheetPrimitive.Portal = SheetPrimitive.Portal;
 
 const SheetOverlay: React.ForwardRefExoticComponent<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay> &
-    React.RefAttributes<React.ElementRef<typeof SheetPrimitive.Overlay>>
+    React.RefAttributes<React.ComponentRef<typeof SheetPrimitive.Overlay>>
 > = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Overlay>,
+  React.ComponentRef<typeof SheetPrimitive.Overlay>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Overlay>
 >(
   (
@@ -44,9 +44,9 @@ SheetOverlay.displayName = SheetPrimitive.Overlay.displayName;
 
 const SheetContent: React.ForwardRefExoticComponent<
   SheetContentProps &
-    React.RefAttributes<React.ElementRef<typeof SheetPrimitive.Content>>
+    React.RefAttributes<React.ComponentRef<typeof SheetPrimitive.Content>>
 > = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Content>,
+  React.ComponentRef<typeof SheetPrimitive.Content>,
   SheetContentProps
 >(
   (
@@ -101,9 +101,9 @@ SheetFooter.displayName = "SheetFooter";
 
 const SheetTitle: React.ForwardRefExoticComponent<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title> &
-    React.RefAttributes<React.ElementRef<typeof SheetPrimitive.Title>>
+    React.RefAttributes<React.ComponentRef<typeof SheetPrimitive.Title>>
 > = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Title>,
+  React.ComponentRef<typeof SheetPrimitive.Title>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Title>
 >(
   (
@@ -124,9 +124,9 @@ SheetTitle.displayName = SheetPrimitive.Title.displayName;
 
 const SheetDescription: React.ForwardRefExoticComponent<
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description> &
-    React.RefAttributes<React.ElementRef<typeof SheetPrimitive.Description>>
+    React.RefAttributes<React.ComponentRef<typeof SheetPrimitive.Description>>
 > = React.forwardRef<
-  React.ElementRef<typeof SheetPrimitive.Description>,
+  React.ComponentRef<typeof SheetPrimitive.Description>,
   React.ComponentPropsWithoutRef<typeof SheetPrimitive.Description>
 >(
   (
