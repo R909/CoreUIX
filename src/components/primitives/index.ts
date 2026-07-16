@@ -7,3 +7,8 @@ export * from "@components/primitives/textarea";
 export * from "@components/primitives/toggle";
 export * from "@components/primitives/command";
 export * from "@components/primitives/popover";
+export * from "@components/primitives/tabs";
+export * from "@components/primitives/select";
+export * from "@components/primitives/multi-select";
+export * from "@components/primitives/checkbox";
+export * from "@components/primitives/text";
