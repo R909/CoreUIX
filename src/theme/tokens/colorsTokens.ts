@@ -31,5 +31,14 @@ export const colors: CoreUIXTheme["colors"] = {
   card: "#ffffff",
   cardForeground: "#111827",
 
+  success: "#16a34a",
+  successForeground: "#ffffff",
+
+  warning: "#d97706",
+  warningForeground: "#111827",
+
+  info: "#0284c7",
+  infoForeground: "#ffffff",
+
   transparent: "transparent",
 };

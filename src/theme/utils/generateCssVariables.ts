@@ -18,6 +18,7 @@ const FLAT_SECTIONS = [
   "width",
   "height",
   "sidebar",
+  "opacity",
 ] as const satisfies readonly (keyof CoreUIXTheme)[];
 
 // CSS variable name prefix for each flat section. Required (not optional) so a
@@ -32,6 +33,7 @@ const SECTION_CSS_PREFIX: Record<(typeof FLAT_SECTIONS)[number], string> = {
   width: "width",
   height: "height",
   sidebar: "sidebar",
+  opacity: "opacity",
 };
 
 // Nested `typography.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.
@@ -51,6 +53,78 @@ const TYPOGRAPHY_CSS_PREFIX: Record<
   fontSize: "font-size",
   fontWeight: "font-weight",
   letterSpacing: "letter-spacing",
+};
+
+// Nested `border.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof BORDER_SECTIONS)[number]` below relies on; a widened annotation would break BORDER_CSS_PREFIX's Record key type.
+const BORDER_SECTIONS = [
+  "width",
+  "style",
+] as const satisfies readonly (keyof CoreUIXTheme["border"])[];
+
+const BORDER_CSS_PREFIX: Record<(typeof BORDER_SECTIONS)[number], string> = {
+  width: "border-width",
+  style: "border-style",
+};
+
+// Nested `transition.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof TRANSITION_SECTIONS)[number]` below relies on; a widened annotation would break TRANSITION_CSS_PREFIX's Record key type.
+const TRANSITION_SECTIONS = [
+  "duration",
+  "easing",
+] as const satisfies readonly (keyof CoreUIXTheme["transition"])[];
+
+const TRANSITION_CSS_PREFIX: Record<
+  (typeof TRANSITION_SECTIONS)[number],
+  string
+> = {
+  duration: "transition-duration",
+  easing: "transition-easing",
+};
+
+// Nested `text.*` sub-sections that are already flat `Record<string, string>`
+// and flatten straight to `--cuix-<prefix>-<key>` vars.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof TEXT_FLAT_SECTIONS)[number]` below relies on; a widened annotation would break TEXT_FLAT_CSS_PREFIX's Record key type.
+const TEXT_FLAT_SECTIONS = [
+  "color",
+  "decoration",
+  "transform",
+  "overflow",
+  "whiteSpace",
+  "align",
+] as const satisfies readonly (keyof CoreUIXTheme["text"])[];
+
+const TEXT_FLAT_CSS_PREFIX: Record<
+  (typeof TEXT_FLAT_SECTIONS)[number],
+  string
+> = {
+  color: "text-color",
+  decoration: "text-decoration",
+  transform: "text-transform",
+  overflow: "text-overflow",
+  whiteSpace: "text-white-space",
+  align: "text-align",
+};
+
+// Nested `text.*` sub-sections that are size-keyed style presets (each size
+// holding `{ fontSize, fontWeight, lineHeight }`) and flatten to
+// `--cuix-<prefix>-<size>-<prop>` vars, e.g. `--cuix-text-heading-h1-font-size`.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof TEXT_PRESET_SECTIONS)[number]` below relies on; a widened annotation would break TEXT_PRESET_CSS_PREFIX's Record key type.
+const TEXT_PRESET_SECTIONS = [
+  "heading",
+  "body",
+  "caption",
+  "label",
+] as const satisfies readonly (keyof CoreUIXTheme["text"])[];
+
+const TEXT_PRESET_CSS_PREFIX: Record<
+  (typeof TEXT_PRESET_SECTIONS)[number],
+  string
+> = {
+  heading: "text-heading",
+  body: "text-body",
+  caption: "text-caption",
+  label: "text-label",
 };
 
 // Theme sections deliberately excluded from CSS-variable generation: `flex` holds
@@ -89,6 +163,49 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   tokens["--cuix-line-height"] = theme.typography.lineHeight;
   tokens["--cuix-line-height-tight"] = theme.typography.lineHeightTight;
 
+  for (const section of BORDER_SECTIONS) {
+    const prefix: string = BORDER_CSS_PREFIX[section];
+    Object.entries(theme.border[section]).forEach(
+      ([key, value]: [string, string]) => {
+        tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+      },
+    );
+  }
+
+  for (const section of TRANSITION_SECTIONS) {
+    const prefix: string = TRANSITION_CSS_PREFIX[section];
+    Object.entries(theme.transition[section]).forEach(
+      ([key, value]: [string, string]) => {
+        tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+      },
+    );
+  }
+
+  for (const section of TEXT_FLAT_SECTIONS) {
+    const prefix: string = TEXT_FLAT_CSS_PREFIX[section];
+    Object.entries(theme.text[section]).forEach(
+      ([key, value]: [string, string]) => {
+        tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+      },
+    );
+  }
+
+  for (const section of TEXT_PRESET_SECTIONS) {
+    const prefix: string = TEXT_PRESET_CSS_PREFIX[section];
+    Object.entries(theme.text[section]).forEach(
+      ([sizeKey, sizeValue]: [
+        string,
+        { fontSize: string; fontWeight: string; lineHeight: string },
+      ]) => {
+        Object.entries(sizeValue).forEach(([prop, value]: [string, string]) => {
+          tokens[
+            `--cuix-${prefix}-${camelToKebab(sizeKey)}-${camelToKebab(prop)}`
+          ] = value;
+        });
+      },
+    );
+  }
+
   // Fails loudly if a new top-level theme section is added to CoreUIXTheme without
   // wiring it into FLAT_SECTIONS or EXCLUDED_SECTIONS above — this is what let `flex`
   // silently fall through before instead of surfacing as an error.
@@ -96,6 +213,9 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
     ...FLAT_SECTIONS,
     ...EXCLUDED_SECTIONS,
     "typography",
+    "text",
+    "border",
+    "transition",
   ]);
   const unhandledSections: (keyof CoreUIXTheme)[] = (
     Object.keys(theme) as (keyof CoreUIXTheme)[]

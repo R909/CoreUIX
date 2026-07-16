@@ -10,3 +10,7 @@ export * from "@theme/tokens/zIndexTokens";
 export * from "@theme/tokens/widthTokens";
 export * from "@theme/tokens/heightTokens";
 export * from "@theme/tokens/sidebarTokens";
+export * from "@theme/tokens/textTokens";
+export * from "@theme/tokens/borderTokens";
+export * from "@theme/tokens/opacityTokens";
+export * from "@theme/tokens/transitionTokens";

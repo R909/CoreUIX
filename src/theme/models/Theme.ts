@@ -30,6 +30,15 @@ export interface CoreUIXTheme {
     card: string;
     cardForeground: string;
 
+    success: string;
+    successForeground: string;
+
+    warning: string;
+    warningForeground: string;
+
+    info: string;
+    infoForeground: string;
+
     transparent: string;
   };
 
@@ -37,6 +46,8 @@ export interface CoreUIXTheme {
     sm: string;
     md: string;
     lg: string;
+    xl: string;
+    full: string;
   };
 
   spacing: {
@@ -44,23 +55,70 @@ export interface CoreUIXTheme {
     sm: string;
     md: string;
     lg: string;
+    xl: string;
+    "2xl": string;
     tight: string;
   };
 
   shadow: {
+    none: string;
     sm: string;
     md: string;
     lg: string;
+    inner: string;
   };
 
   zIndex: {
+    dropdown: string;
+    sticky: string;
+    overlay: string;
     modal: string;
+    popover: string;
+    toast: string;
     tooltip: string;
   };
 
   breakpoints: {
     sm: string;
     md: string;
+    lg: string;
+    xl: string;
+    "2xl": string;
+  };
+
+  border: {
+    width: {
+      none: string;
+      thin: string;
+      thick: string;
+    };
+    style: {
+      solid: string;
+      dashed: string;
+      dotted: string;
+      none: string;
+    };
+  };
+
+  opacity: {
+    none: string;
+    disabled: string;
+    hover: string;
+    full: string;
+  };
+
+  transition: {
+    duration: {
+      fast: string;
+      normal: string;
+      slow: string;
+    };
+    easing: {
+      linear: string;
+      in: string;
+      out: string;
+      inOut: string;
+    };
   };
 
   width: {
@@ -128,5 +186,64 @@ export interface CoreUIXTheme {
     accentForeground: string;
     border: string;
     ring: string;
+  };
+  text: {
+    color: {
+      primary: string;
+      secondary: string;
+      muted: string;
+      disabled: string;
+      link: string;
+      danger: string;
+      success: string;
+      warning: string;
+      inverse: string;
+    };
+    heading: {
+      h1: { fontSize: string; fontWeight: string; lineHeight: string };
+      h2: { fontSize: string; fontWeight: string; lineHeight: string };
+      h3: { fontSize: string; fontWeight: string; lineHeight: string };
+      h4: { fontSize: string; fontWeight: string; lineHeight: string };
+    };
+    body: {
+      sm: { fontSize: string; fontWeight: string; lineHeight: string };
+      md: { fontSize: string; fontWeight: string; lineHeight: string };
+      lg: { fontSize: string; fontWeight: string; lineHeight: string };
+    };
+    caption: {
+      sm: { fontSize: string; fontWeight: string; lineHeight: string };
+      md: { fontSize: string; fontWeight: string; lineHeight: string };
+    };
+    label: {
+      sm: { fontSize: string; fontWeight: string; lineHeight: string };
+      md: { fontSize: string; fontWeight: string; lineHeight: string };
+    };
+    decoration: {
+      underline: string;
+      lineThrough: string;
+      none: string;
+    };
+    transform: {
+      uppercase: string;
+      lowercase: string;
+      capitalize: string;
+      none: string;
+    };
+    overflow: {
+      ellipsis: string;
+      clip: string;
+    };
+    whiteSpace: {
+      normal: string;
+      nowrap: string;
+      pre: string;
+      preWrap: string;
+    };
+    align: {
+      left: string;
+      center: string;
+      right: string;
+      justify: string;
+    };
   };
 }

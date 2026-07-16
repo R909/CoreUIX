@@ -22,6 +22,12 @@
     --cuix-colors-accent-foreground: #111827;
     --cuix-colors-destructive: #dc2626;
     --cuix-colors-destructive-foreground: #ffffff;
+    --cuix-colors-success: #16a34a;
+    --cuix-colors-success-foreground: #ffffff;
+    --cuix-colors-warning: #d97706;
+    --cuix-colors-warning-foreground: #111827;
+    --cuix-colors-info: #0284c7;
+    --cuix-colors-info-foreground: #ffffff;
     --cuix-colors-border: #e5e7eb;
     --cuix-colors-input: #e5e7eb;
     --cuix-colors-ring: #2563eb;
@@ -31,20 +37,26 @@
     --cuix-radius-sm: 6px;
     --cuix-radius-md: 8px;
     --cuix-radius-lg: 12px;
+    --cuix-radius-xl: 16px;
+    --cuix-radius-full: 9999px;
 
     /* Spacing scale. */
     --cuix-spacing-xs: 4px;
     --cuix-spacing-sm: 8px;
     --cuix-spacing-md: 16px;
     --cuix-spacing-lg: 24px;
+    --cuix-spacing-xl: 32px;
+    --cuix-spacing-2xl: 48px;
     --cuix-spacing-tight: 6px;
 
     /* Elevation shadows. */
+    --cuix-shadow-none: none;
     --cuix-shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --cuix-shadow-md:
       0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --cuix-shadow-lg:
       0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --cuix-shadow-inner: inset 0 2px 4px 0 rgb(0 0 0 / 0.05);
 
     /* Typography scale and font stacks. */
     --cuix-font-size-xs: 12px;
@@ -61,15 +73,24 @@
     --cuix-letter-spacing-normal: 0em;
     --cuix-letter-spacing-tight: -0.025em;
 
+    --cuix-line-height: 24px;
     --cuix-line-height-tight: 1;
 
-    /* Z-index layers for modals and tooltips. */
-    --cuix-z-index-modal: 1000;
-    --cuix-z-index-tooltip: 1500;
+    /* Z-index stacking order, lowest to highest layer. */
+    --cuix-z-index-dropdown: 1000;
+    --cuix-z-index-sticky: 1020;
+    --cuix-z-index-overlay: 1030;
+    --cuix-z-index-modal: 1040;
+    --cuix-z-index-popover: 1050;
+    --cuix-z-index-toast: 1060;
+    --cuix-z-index-tooltip: 1070;
 
     /* Responsive breakpoints. */
     --cuix-breakpoint-sm: 640px;
     --cuix-breakpoint-md: 768px;
+    --cuix-breakpoint-lg: 1024px;
+    --cuix-breakpoint-xl: 1280px;
+    --cuix-breakpoint-2xl: 1536px;
 
     /* Width scale. */
     --cuix-width-full: 100%;
@@ -87,6 +108,32 @@
     --cuix-height-min: min-content;
     --cuix-height-max: max-content;
 
+    /* Border width and style. */
+    --cuix-border-width-none: 0px;
+    --cuix-border-width-thin: 1px;
+    --cuix-border-width-thick: 2px;
+
+    --cuix-border-style-solid: solid;
+    --cuix-border-style-dashed: dashed;
+    --cuix-border-style-dotted: dotted;
+    --cuix-border-style-none: none;
+
+    /* Opacity values for disabled states, overlays, and hover dimming. */
+    --cuix-opacity-none: 0;
+    --cuix-opacity-disabled: 0.5;
+    --cuix-opacity-hover: 0.8;
+    --cuix-opacity-full: 1;
+
+    /* Transition durations and easing curves. */
+    --cuix-transition-duration-fast: 150ms;
+    --cuix-transition-duration-normal: 250ms;
+    --cuix-transition-duration-slow: 400ms;
+
+    --cuix-transition-easing-linear: linear;
+    --cuix-transition-easing-in: cubic-bezier(0.4, 0, 1, 1);
+    --cuix-transition-easing-out: cubic-bezier(0, 0, 0.2, 1);
+    --cuix-transition-easing-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
     /* Sidebar palette. */
     --cuix-sidebar-background: #fafafa;
     --cuix-sidebar-foreground: #3f3f46;
@@ -96,6 +143,88 @@
     --cuix-sidebar-accent-foreground: #18181b;
     --cuix-sidebar-border: #e5e7eb;
     --cuix-sidebar-ring: #3b82f6;
+
+    /* Semantic text colors. */
+    --cuix-text-color-primary: #111827;
+    --cuix-text-color-secondary: #374151;
+    --cuix-text-color-muted: #6b7280;
+    --cuix-text-color-disabled: #9ca3af;
+    --cuix-text-color-link: #2563eb;
+    --cuix-text-color-danger: #dc2626;
+    --cuix-text-color-success: #16a34a;
+    --cuix-text-color-warning: #d97706;
+    --cuix-text-color-inverse: #ffffff;
+
+    /* Heading style presets (h1-h4). */
+    --cuix-text-heading-h1-font-size: 36px;
+    --cuix-text-heading-h1-font-weight: 700;
+    --cuix-text-heading-h1-line-height: 40px;
+
+    --cuix-text-heading-h2-font-size: 30px;
+    --cuix-text-heading-h2-font-weight: 700;
+    --cuix-text-heading-h2-line-height: 36px;
+
+    --cuix-text-heading-h3-font-size: 24px;
+    --cuix-text-heading-h3-font-weight: 600;
+    --cuix-text-heading-h3-line-height: 32px;
+
+    --cuix-text-heading-h4-font-size: 20px;
+    --cuix-text-heading-h4-font-weight: 600;
+    --cuix-text-heading-h4-line-height: 28px;
+
+    /* Body style presets. */
+    --cuix-text-body-sm-font-size: 14px;
+    --cuix-text-body-sm-font-weight: 400;
+    --cuix-text-body-sm-line-height: 20px;
+
+    --cuix-text-body-md-font-size: 16px;
+    --cuix-text-body-md-font-weight: 400;
+    --cuix-text-body-md-line-height: 24px;
+
+    --cuix-text-body-lg-font-size: 18px;
+    --cuix-text-body-lg-font-weight: 400;
+    --cuix-text-body-lg-line-height: 28px;
+
+    /* Caption style presets. */
+    --cuix-text-caption-sm-font-size: 11px;
+    --cuix-text-caption-sm-font-weight: 400;
+    --cuix-text-caption-sm-line-height: 14px;
+
+    --cuix-text-caption-md-font-size: 12px;
+    --cuix-text-caption-md-font-weight: 400;
+    --cuix-text-caption-md-line-height: 16px;
+
+    /* Label style presets. */
+    --cuix-text-label-sm-font-size: 12px;
+    --cuix-text-label-sm-font-weight: 500;
+    --cuix-text-label-sm-line-height: 16px;
+
+    --cuix-text-label-md-font-size: 14px;
+    --cuix-text-label-md-font-weight: 500;
+    --cuix-text-label-md-line-height: 20px;
+
+    /* Text decoration, transform, overflow, white-space, and alignment values. */
+    --cuix-text-decoration-underline: underline;
+    --cuix-text-decoration-line-through: line-through;
+    --cuix-text-decoration-none: none;
+
+    --cuix-text-transform-uppercase: uppercase;
+    --cuix-text-transform-lowercase: lowercase;
+    --cuix-text-transform-capitalize: capitalize;
+    --cuix-text-transform-none: none;
+
+    --cuix-text-overflow-ellipsis: ellipsis;
+    --cuix-text-overflow-clip: clip;
+
+    --cuix-text-white-space-normal: normal;
+    --cuix-text-white-space-nowrap: nowrap;
+    --cuix-text-white-space-pre: pre;
+    --cuix-text-white-space-pre-wrap: pre-wrap;
+
+    --cuix-text-align-left: left;
+    --cuix-text-align-center: center;
+    --cuix-text-align-right: right;
+    --cuix-text-align-justify: justify;
   }
 
   /* Dark theme colors; other tokens stay the same as the light theme. */
@@ -116,6 +245,12 @@
     --cuix-colors-accent-foreground: #fafafa;
     --cuix-colors-destructive: #7f1d1d;
     --cuix-colors-destructive-foreground: #fafafa;
+    --cuix-colors-success: #14532d;
+    --cuix-colors-success-foreground: #fafafa;
+    --cuix-colors-warning: #78350f;
+    --cuix-colors-warning-foreground: #fafafa;
+    --cuix-colors-info: #0c4a6e;
+    --cuix-colors-info-foreground: #fafafa;
     --cuix-colors-border: #262626;
     --cuix-colors-input: #262626;
     --cuix-colors-ring: #d4d4d4;
@@ -129,6 +264,17 @@
     --cuix-sidebar-accent-foreground: #f4f4f5;
     --cuix-sidebar-border: #27272a;
     --cuix-sidebar-ring: #3b82f6;
+
+    /* Semantic text colors. */
+    --cuix-text-color-primary: #fafafa;
+    --cuix-text-color-secondary: #d4d4d4;
+    --cuix-text-color-muted: #a3a3a3;
+    --cuix-text-color-disabled: #525252;
+    --cuix-text-color-link: #60a5fa;
+    --cuix-text-color-danger: #f87171;
+    --cuix-text-color-success: #4ade80;
+    --cuix-text-color-warning: #fbbf24;
+    --cuix-text-color-inverse: #111827;
   }
 
   /* Apply the theme colors globally. */
