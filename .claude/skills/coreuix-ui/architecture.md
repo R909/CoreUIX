@@ -6,12 +6,19 @@ Every component lives in its own folder with a local barrel, aggregated upward
 through exactly three levels:
 
 ```
-src/components/<category>/<name>/<name>.tsx     e.g. primitives/button/Button.tsx
-src/components/<category>/<name>/index.ts       -> export * from "./<name>"
+src/components/<category>/<name>/<name>.tsx     e.g. primitives/button/button.tsx
+src/components/<category>/<name>/index.ts       -> export * from "@components/<category>/<name>/<name>"
 src/components/<category>/index.ts              -> aggregates every component barrel in that category
 src/components/index.ts                         -> aggregates every category barrel
 src/index.ts                                    -> public package API (components + theme + utils)
 ```
+
+Every barrel uses the full category-scoped alias to import its own sibling file —
+never a relative `"./<name>"`. The `no-restricted-imports` ESLint rule bans
+relative imports (and the bare `@/*` catch-all) repo-wide, with no exception for a
+barrel referencing a file in the same folder; e.g.
+`src/components/primitives/button/index.ts` is
+`export * from "@components/primitives/button/button";`.
 
 `src/components/index.ts` is the **only** file that changes when a whole new
 category is introduced; every other barrel only changes when a component is
@@ -20,9 +27,9 @@ added/removed within its own folder or category.
 `src/index.ts` re-exports exactly three things, nothing deeper:
 
 ```ts
-export * from "@/utils";
-export * from "@/components";
-export * from "@/theme";
+export * from "@utils/index";
+export * from "@components/index";
+export * from "@theme/index";
 ```
 
 Consumers only ever import from the package root (`@coreuix/ui`) — no internal path
@@ -52,9 +59,9 @@ Step by step:
 
 1. **`theme/tokens/*.ts`** — one file per theme section (`colorsTokens.ts`,
    `radiusTokens.ts`, `spacingTokens.ts`, `shadowsTokens.ts`, `typographyTokens.ts`,
-   `breakpointsTokens.ts`, `flexTokens.ts`, `zIndexTokens.ts`), each exporting the
-   default values for that section, typed against the matching slice of
-   `CoreUIXTheme`.
+   `breakpointsTokens.ts`, `flexTokens.ts`, `zIndexTokens.ts`, `widthTokens.ts`,
+   `heightTokens.ts`, `sidebarTokens.ts`), each exporting the default values for
+   that section, typed against the matching slice of `CoreUIXTheme`.
 2. **`core/defaultTheme.ts`** assembles all token modules into one complete
    `CoreUIXTheme` object.
 3. **`core/createTheme(overrides)`** is the public entry point: it calls
@@ -68,9 +75,23 @@ Step by step:
      `#ffffff`).
    - **`utils/generateCssVariables`** flattens the nested theme object and derives a
      `--cuix-*` CSS variable name for every leaf value (e.g. `colors.primary` ->
-     `--cuix-colors-primary`, `typography.fontSize.sm` -> `--cuix-font-size-sm`) by
-     walking each section with `Object.entries` — this is why adding a token never
-     requires touching this file.
+     `--cuix-colors-primary`, `typography.fontSize.sm` -> `--cuix-font-size-sm`).
+     Contrary to what this doc previously claimed, this is **not** a generic
+     `Object.entries` walk over arbitrary top-level keys — `flattenTheme` walks a
+     hand-enumerated `FLAT_SECTIONS` list (`colors`, `radius`, `spacing`, `shadow`,
+     `zIndex`, `breakpoints`, `width`, `height`, `sidebar`) plus a separate
+     `TYPOGRAPHY_SECTIONS` list for `typography`'s nested sub-sections, each with a
+     matching `SECTION_CSS_PREFIX`/`TYPOGRAPHY_CSS_PREFIX` entry. `flex` is
+     deliberately listed in `EXCLUDED_SECTIONS` instead — its tokens are pre-composed
+     Tailwind class strings, not CSS values, so they aren't meaningful as `var()`
+     targets and are only consumed via `useTheme()` in variant files. `flattenTheme`
+     throws at runtime if any top-level `CoreUIXTheme` key isn't accounted for in one
+     of these three lists, so a new top-level section can't silently fall through the
+     way `flex` once did. **Adding a key within an already-listed section** (e.g. a
+     new `colors.*` token) needs no change here — `Object.entries(theme[section])`
+     picks it up automatically. **Adding a whole new top-level section** does require
+     hand-adding it to `FLAT_SECTIONS`/`SECTION_CSS_PREFIX` (or `EXCLUDED_SECTIONS` if
+     it's not meaningful as a CSS variable, like `flex`).
    - **`utils/applyTheme`** writes that variable map onto
      `document.documentElement.style`.
 5. Both consumption paths — React (`useTheme()`) and CSS (`var(--cuix-colors-primary)`
@@ -80,9 +101,12 @@ Step by step:
 ### Adding a new token
 
 Add the key to `theme/models/Theme.ts` and a default value in the matching
-`theme/tokens/*.ts` file. Nothing else needs to change for the JS/React side —
-`generateCssVariables` picks it up automatically. However, in practice this repo
-also keeps two other files in sync by hand:
+`theme/tokens/*.ts` file. If the key belongs to a section already listed in
+`generateCssVariables.ts`'s `FLAT_SECTIONS`/`TYPOGRAPHY_SECTIONS` (true for every
+existing section except `flex`), nothing else needs to change for the JS/React
+side — it's picked up automatically. (Adding a whole new top-level section, not
+just a new key within one, does require hand-editing `generateCssVariables.ts` —
+see above.) In practice this repo also keeps two other files in sync by hand:
 
 - `src/styles.css` — the static `:root`/`.dark` variable values used before
   `ThemeProvider`'s `useEffect` has run (first paint / non-React consumers).
@@ -108,17 +132,24 @@ also keeps two other files in sync by hand:
 ```
 pnpm build
    |
+   +- eslint .       lints the whole repo first — any error (banned import path,
+   |                  missing type annotation, unformatted file) fails the build
+   |                  before tsup/tailwindcss ever run
    +- tsup          src/index.ts -> dist/index.js (ESM), dist/index.cjs (CJS), dist/index.d.ts / .d.cts
    +- tailwindcss    src/styles.css -> dist/styles.css (minified, via tailwind.config.ts)
 ```
 
+`package.json`'s `"build"` script is literally `"eslint . && tsup && tailwindcss -i
+src/styles.css -o dist/styles.css --config tailwind.config.ts --minify"` — lint is
+a hard gate, not a separate concern from compilation.
+
 `dist/` is listed in `.gitignore` and has zero files tracked in git (verify with
-`git ls-files dist` before trusting any doc that claims otherwise — see
-`coding-standards.md` for the specific discrepancy between `CLAUDE.md` and the
-actual repo state on this point). `package.json`'s `"files"` field includes `dist`
+`git ls-files dist` if in doubt). `package.json`'s `"files"` field includes `dist`
 and `tailwind.config.ts`, so `npm pack`/`npm publish` bundle the freshly built
 output into the tarball straight off disk regardless of git tracking — run
-`pnpm build` before packing/publishing.
+`pnpm build` before packing/publishing. `package.json`'s `"prepare": "husky && npm
+run build"` script also means `pnpm install` runs a full build (and installs the
+Husky hook) as a side effect in this repo.
 
 ## Consumer integration surface
 

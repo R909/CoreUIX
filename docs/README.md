@@ -28,9 +28,12 @@ tokens (src/theme/tokens) → defaultTheme → createTheme(overrides) → CoreUI
                                                        useTheme()          plain CSS (var(--cuix-colors-primary))
 ```
 
-Components (`src/components/`) consume the theme either via `--cuix-*` CSS variables
-(preferred, e.g. `button`) or via bare Tailwind semantic classes that map to the same
-variables through `tailwind.config.ts` (older pattern, e.g. `card`).
+Components (`src/components/`) consume the theme via `--cuix-*` CSS variables — every current
+primitive (`button`, `badge`, `input`, `label`, `textarea`) and `layout/card` follows this
+pattern. A few sub-parts of the `layout/sidebar` family (`sheet`, `tooltip`, `skeleton`) still
+use bare Tailwind semantic classes (`bg-primary`, `text-muted-foreground`) that map to the same
+variables through `tailwind.config.ts` — see [architecture.md](./architecture.md) for which
+pattern is preferred for new components.
 
 See [CLAUDE.md](../CLAUDE.md) in the repo root for day-to-day commands (build, lint, adding a
 shadcn component, releasing). This `docs/` folder is the deeper reference; CLAUDE.md stays
@@ -38,7 +41,7 @@ short and task-oriented.
 
 ## Note on `.gitignore`
 
-This repo's `.gitignore` currently has a blanket `*.md` rule, so newly created files under
-`docs/` (like this one) are **not tracked by git** yet — the same is true of the existing
-`README.md`, `CLAUDE.md`, and `COMMANDS.md`. If you want `docs/` version-controlled, either
-add `!docs/**` to `.gitignore` or `git add -f` these files.
+`.gitignore` does **not** have a blanket `*.md` rule — `docs/README.md`, the rest of `docs/`,
+`README.md`, `CLAUDE.md`, and `COMMANDS.md` are all tracked in git today (verify with
+`git ls-files | grep '\.md$'`). Markdown files are treated like any other source file: commit
+them normally.

@@ -21,32 +21,40 @@ import type {
 } from "@components/layout/card/card.types";
 
 // Outer card container.
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => (
+const Card: React.ForwardRefExoticComponent<
+  CardProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardProps>(
+  ({ className, ...props }: CardProps, ref) => (
     <div ref={ref} className={cn(cardVariants(), className)} {...props} />
   ),
 );
 Card.displayName = "Card";
 
 // Header section, usually holds the title and description.
-const CardHeader = React.forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ className, ...props }, ref) => (
+const CardHeader: React.ForwardRefExoticComponent<
+  CardHeaderProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardHeaderProps>(
+  ({ className, ...props }: CardHeaderProps, ref) => (
     <div ref={ref} className={cn(cardHeaderVariants(), className)} {...props} />
   ),
 );
 CardHeader.displayName = "CardHeader";
 
 // Title text within CardHeader.
-const CardTitle = React.forwardRef<HTMLDivElement, CardTitleProps>(
-  ({ className, ...props }, ref) => (
+const CardTitle: React.ForwardRefExoticComponent<
+  CardTitleProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardTitleProps>(
+  ({ className, ...props }: CardTitleProps, ref) => (
     <div ref={ref} className={cn(cardTitleVariants(), className)} {...props} />
   ),
 );
 CardTitle.displayName = "CardTitle";
 
 // Muted supporting text shown under the title.
-const CardDescription = React.forwardRef<HTMLDivElement, CardDescriptionProps>(
-  ({ className, ...props }, ref) => (
+const CardDescription: React.ForwardRefExoticComponent<
+  CardDescriptionProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardDescriptionProps>(
+  ({ className, ...props }: CardDescriptionProps, ref) => (
     <div
       ref={ref}
       className={cn(cardDescriptionVariants(), className)}
@@ -57,8 +65,10 @@ const CardDescription = React.forwardRef<HTMLDivElement, CardDescriptionProps>(
 CardDescription.displayName = "CardDescription";
 
 // Main body region of the card.
-const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
-  ({ className, ...props }, ref) => (
+const CardContent: React.ForwardRefExoticComponent<
+  CardContentProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardContentProps>(
+  ({ className, ...props }: CardContentProps, ref) => (
     <div
       ref={ref}
       className={cn(cardContentVariants(), className)}
@@ -69,8 +79,10 @@ const CardContent = React.forwardRef<HTMLDivElement, CardContentProps>(
 CardContent.displayName = "CardContent";
 
 // Footer row, usually for action buttons.
-const CardFooter = React.forwardRef<HTMLDivElement, CardFooterProps>(
-  ({ className, ...props }, ref) => (
+const CardFooter: React.ForwardRefExoticComponent<
+  CardFooterProps & React.RefAttributes<HTMLDivElement>
+> = React.forwardRef<HTMLDivElement, CardFooterProps>(
+  ({ className, ...props }: CardFooterProps, ref) => (
     <div ref={ref} className={cn(cardFooterVariants(), className)} {...props} />
   ),
 );

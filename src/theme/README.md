@@ -6,31 +6,36 @@ overrides, and pushed to the DOM as CSS custom properties (`--cuix-*`).
 
 ## Folder / file reference
 
-| Path                            | Responsibility                                                                                                 |
-| ------------------------------- | -------------------------------------------------------------------------------------------------------------- |
-| `tokens/colors.ts`              | Raw color palette (background, primary, destructive, border, ring, …).                                         |
-| `tokens/radius.ts`              | Border-radius scale (`sm` / `md` / `lg`).                                                                      |
-| `tokens/spacing.ts`             | Spacing scale (`xs` / `sm` / `md` / `lg`).                                                                     |
-| `tokens/typography.ts`          | Font family, font size, line height.                                                                           |
-| `tokens/shadows.ts`             | Box-shadow scale (`sm` / `md` / `lg`).                                                                         |
-| `tokens/breakpoints.ts`         | Responsive breakpoints (`sm` / `md`).                                                                          |
-| `tokens/index.ts`               | Barrel export of all token modules.                                                                            |
-| `models/Theme.ts`               | `CoreUIXTheme` — the full theme shape every token/module conforms to.                                          |
-| `models/DeepPartial.ts`         | Recursive partial helper type, used for theme overrides.                                                       |
-| `models/index.ts`               | Barrel export of models.                                                                                       |
-| `core/defaultTheme.ts`          | Assembles `tokens/*` + hardcoded `zIndex` into one complete default `CoreUIXTheme`.                            |
-| `core/mergeTheme.ts`            | Deep-merges a partial theme override onto a base theme (built on `@coreuix/utils/deepMerge`).                  |
-| `core/createTheme.ts`           | Public entry point: `mergeTheme(defaultTheme, override)`.                                                      |
-| `core/index.ts`                 | Barrel export of core.                                                                                         |
-| `utils/normalize.ts`            | Normalizes a resolved theme (currently: expands shorthand hex colors).                                         |
-| `utils/generateCssVariables.ts` | Flattens a nested `CoreUIXTheme` and converts each key directly into a `--cuix-*` CSS variable name/value map. |
-| `utils/applyTheme.ts`           | Writes a `--cuix-*` variable map onto `document.documentElement`.                                              |
-| `utils/runtimeUpdate.ts`        | Orchestrates normalize → generateCssVariables → applyTheme.                                                    |
-| `utils/index.ts`                | Barrel export of utils.                                                                                        |
-| `ThemeContext.tsx`              | React context, defaults to `defaultTheme`.                                                                     |
-| `useTheme.ts`                   | Hook that reads `ThemeContext`.                                                                                |
-| `ThemeProvider.tsx`             | React provider: builds the theme via `createTheme`, provides it via context, applies it to the DOM via utils.  |
-| `index.ts`                      | Public barrel — everything above, importable via the `@coreuix/theme/*` path alias.                            |
+| Path                            | Responsibility                                                                                                                                                                                                                                                                                                                                                                                                                                     |
+| ------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `tokens/colorsTokens.ts`        | Light-theme color palette (background, primary/secondary/destructive + foregrounds, border/input/ring, muted/accent/popover/card, `transparent`). Dark overrides live in `src/styles.css`, not here.                                                                                                                                                                                                                                               |
+| `tokens/radiusTokens.ts`        | Border-radius scale (`sm` / `md` / `lg`).                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `tokens/spacingTokens.ts`       | Spacing scale (`xs` / `sm` / `md` / `lg` / `tight`).                                                                                                                                                                                                                                                                                                                                                                                               |
+| `tokens/typographyTokens.ts`    | `fontFamily` (`body`/`heading`), `fontSize` (`xs`/`sm`/`md`/`lg`), `fontWeight` (`medium`/`semibold`), `letterSpacing` (`normal`/`tight`), flat `lineHeight` / `lineHeightTight`.                                                                                                                                                                                                                                                                  |
+| `tokens/shadowsTokens.ts`       | Box-shadow scale (`sm` / `md` / `lg`).                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `tokens/breakpointsTokens.ts`   | Responsive breakpoints (`sm` / `md`).                                                                                                                                                                                                                                                                                                                                                                                                              |
+| `tokens/flexTokens.ts`          | Ready-to-use Tailwind flex utility-class strings (e.g. `"flex flex-row"`) — not raw CSS values, so this section is deliberately excluded from CSS-variable generation (see `utils/generateCssVariables.ts` below).                                                                                                                                                                                                                                 |
+| `tokens/zIndexTokens.ts`        | Z-index values for modals/tooltips.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `tokens/widthTokens.ts`         | Width scale (`full` / `screen` / `auto` / `fit` / `min` / `max`).                                                                                                                                                                                                                                                                                                                                                                                  |
+| `tokens/heightTokens.ts`        | Height scale (`full` / `screen` / `auto` / `fit` / `min` / `max`).                                                                                                                                                                                                                                                                                                                                                                                 |
+| `tokens/sidebarTokens.ts`       | Sidebar-specific color palette (`background`/`foreground`/`primary`/`primaryForeground`/`accent`/`accentForeground`/`border`/`ring`), consumed by `src/components/layout/sidebar`.                                                                                                                                                                                                                                                                 |
+| `tokens/index.ts`               | Barrel export of all token modules.                                                                                                                                                                                                                                                                                                                                                                                                                |
+| `models/Theme.ts`               | `CoreUIXTheme` — the full theme shape every token/module conforms to. Top-level sections: `colors`, `radius`, `spacing`, `shadow`, `zIndex`, `breakpoints`, `width`, `height`, `typography`, `flex`, `sidebar`.                                                                                                                                                                                                                                    |
+| `models/DeepPartial.ts`         | Recursive partial helper type, used for theme overrides.                                                                                                                                                                                                                                                                                                                                                                                           |
+| `models/index.ts`               | Barrel export of models.                                                                                                                                                                                                                                                                                                                                                                                                                           |
+| `core/defaultTheme.ts`          | Assembles `tokens/*` into one complete default `CoreUIXTheme` — a plain `{ ...tokens }` spread; every section (including `zIndex`) now comes from its own `tokens/*.ts` file, nothing is hardcoded inline here.                                                                                                                                                                                                                                    |
+| `core/mergeTheme.ts`            | Deep-merges a partial theme override onto a base theme (built on `src/utils/deepMerge.ts`).                                                                                                                                                                                                                                                                                                                                                        |
+| `core/createTheme.ts`           | Public entry point: `mergeTheme(defaultTheme, override)`.                                                                                                                                                                                                                                                                                                                                                                                          |
+| `core/index.ts`                 | Barrel export of core.                                                                                                                                                                                                                                                                                                                                                                                                                             |
+| `utils/normalize.ts`            | Normalizes a resolved theme (currently: expands shorthand hex colors in the `colors` section, e.g. `#fff` → `#ffffff`).                                                                                                                                                                                                                                                                                                                            |
+| `utils/generateCssVariables.ts` | Flattens a nested `CoreUIXTheme` into a `--cuix-*` CSS variable name/value map — **not** a generic walk over every key; see "CSS variable naming" below.                                                                                                                                                                                                                                                                                           |
+| `utils/applyTheme.ts`           | Writes a `--cuix-*` variable map onto `document.documentElement`.                                                                                                                                                                                                                                                                                                                                                                                  |
+| `utils/runtimeUpdate.ts`        | Orchestrates normalize → generateCssVariables → applyTheme.                                                                                                                                                                                                                                                                                                                                                                                        |
+| `utils/index.ts`                | Barrel export of utils.                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| `ThemeContext.tsx`              | React context, defaults to `defaultTheme`.                                                                                                                                                                                                                                                                                                                                                                                                         |
+| `useTheme.ts`                   | Hook that reads `ThemeContext`.                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| `ThemeProvider.tsx`             | `"use client"` React provider: builds the theme via `createTheme` (memoized on the `theme` prop), provides it via context, applies it to the DOM via `utils/runtimeUpdate.ts` in a `useEffect`.                                                                                                                                                                                                                                                    |
+| `index.ts`                      | Public barrel — everything above, re-exported (alongside every other module) through the package's single entry point, `@coreuix/ui` (see `src/index.ts`). There is no separate `@coreuix/theme` package or subpath — `package.json`'s `exports` map only publishes `.`, `./styles.css`, and `./tailwind.config`. Internally, code reaches these files via the `@theme/*` TypeScript path alias (`tsconfig.json`), not a runtime import specifier. |
 
 ## Data flow
 
@@ -56,7 +61,7 @@ tokens/*  ──▶ core.defaultTheme ──▶ core.createTheme(overrides)
 Step by step:
 
 1. **`ThemeProvider`** receives an optional `theme` override prop (`DeepPartial<CoreUIXTheme>`).
-2. It calls **`createTheme(theme)`** (memoized), which merges the partial override onto **`defaultTheme`** (built from `tokens/*`) via **`mergeTheme`**.
+2. It calls **`createTheme(theme)`** (memoized on the `theme` prop), which merges the partial override onto **`defaultTheme`** (built from `tokens/*`) via **`mergeTheme`**.
 3. The resulting complete `CoreUIXTheme` is provided to the tree via **`ThemeContext`**, readable by any component with **`useTheme()`**.
 4. In a `useEffect`, the provider calls **`applyRuntimeThemeUpdate(mergedTheme)`**, which:
    - **normalizes** colors (expands `#fff` → `#ffffff`),
@@ -64,15 +69,37 @@ Step by step:
    - **applies** it to `document.documentElement`.
 5. Components can consume the theme either via **React** (`useTheme()` → typed JS values) or via **CSS** (`var(--cuix-colors-primary)` etc.) — both stay in sync because both derive from the same merged theme object.
 
+## CSS variable naming
+
+`generateCssVariables.ts`'s internal `flattenTheme` walks each theme section through one of
+three hand-enumerated constants, not a generic `Object.entries(theme)` loop:
+
+- **`FLAT_SECTIONS`** (`colors`, `radius`, `spacing`, `shadow`, `zIndex`, `breakpoints`, `width`,
+  `height`, `sidebar`) flatten straight to `--cuix-<prefix>-<kebab-key>`, with the prefix per
+  section looked up in the required `SECTION_CSS_PREFIX` map.
+- **`TYPOGRAPHY_SECTIONS`** (`fontFamily`, `fontSize`, `fontWeight`, `letterSpacing`) are the
+  nested sub-sections of `typography`, flattened the same way via `TYPOGRAPHY_CSS_PREFIX`.
+  `typography.lineHeight` / `lineHeightTight` are each assigned directly to a fixed variable name
+  outside of either constant.
+- **`EXCLUDED_SECTIONS`** (`flex`) are sections deliberately left out of CSS-variable generation.
+
+After flattening, the function checks every top-level key of the actual theme object against the
+union of these three lists and **throws** (`generateCssVariables: unhandled theme section(s): ...`)
+if anything is missing — this was added specifically because `flex` used to fall through
+unnoticed before `EXCLUDED_SECTIONS` existed. In other words: adding a new top-level section to
+`CoreUIXTheme` without also adding it to one of these three lists is a runtime error, not a
+silently-missing variable.
+
 ## How to extend
 
-- **Add a new token / color**: add the key to `models/Theme.ts` and give it a default value in the matching `tokens/*.ts` file. No other file needs to change — `generateCssVariables.ts` iterates `Object.entries` on each section automatically and derives the CSS variable name from the key.
+- **Add a new token / color within an existing section**: add the key to `models/Theme.ts` and give it a default value in the matching `tokens/*.ts` file. No other file needs to change for values _within_ a section already listed in `FLAT_SECTIONS`/`TYPOGRAPHY_SECTIONS`.
+- **Add a whole new top-level section**: also add it to `FLAT_SECTIONS` (with a `SECTION_CSS_PREFIX` entry) or `EXCLUDED_SECTIONS` in `generateCssVariables.ts` — otherwise the app throws at runtime the first time the theme is applied. Add a `tailwind.config.ts` mapping too if it needs a Tailwind semantic-class equivalent.
 - **Add a new output target** (e.g. React Native styles, JSON export): the pipeline is single-target (CSS variables) by design. Supporting another target would mean introducing a small pluggable seam at `utils/applyTheme.ts` rather than writing straight to `document.documentElement`.
 
 ## Usage example
 
 ```tsx
-import { ThemeProvider, useTheme } from "@coreuix/theme";
+import { ThemeProvider, useTheme } from "@coreuix/ui";
 
 function App() {
   return (

@@ -1,3 +1,1 @@
-export * from "./sidebar";
-export * from "./sidebar.variants";
-export * from "./sidebar.types";
+export * from "@components/layout/sidebar/sidebar";

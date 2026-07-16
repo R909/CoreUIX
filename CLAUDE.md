@@ -10,7 +10,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ```bash
 pnpm install          # install deps (runs "prepare": husky install + full build — see "Husky" below)
-pnpm build             # tsup -> dist/ (ESM + CJS + .d.ts) + tailwindcss -> dist/styles.css
+pnpm build             # eslint . (hard gate) && tsup -> dist/ (ESM + CJS + .d.ts) && tailwindcss -> dist/styles.css
 pnpm typecheck         # tsc --noEmit
 pnpm lint              # eslint .
 pnpm lint:fix          # eslint . --fix
@@ -30,7 +30,7 @@ shadcn drops the generated file flat into `src/components/<name>.tsx`. It must t
 ```bash
 mkdir -p src/components/<category>/<name>
 mv src/components/<name>.tsx src/components/<category>/<name>/<name>.tsx
-echo 'export * from "./<name>";' > src/components/<category>/<name>/index.ts
+echo 'export * from "@components/<category>/<name>/<name>";' > src/components/<category>/<name>/index.ts
 ```
 
 Then wire it into the barrel chain (see Architecture below): add it to `src/components/<category>/index.ts`, creating that file if the category is new, and add `export * from "./<category>";` to `src/components/index.ts` if the category itself is new.
@@ -53,15 +53,27 @@ src/components/index.ts                       -> aggregates every category barre
 src/index.ts                                  -> public package API: re-exports components, utils, theme
 ```
 
-Current categories: `primitives/` (button, badge, input, label, textarea, checkbox, switch, radio-group, avatar, separator, skeleton, toggle, progress, slider, aspect-ratio — atoms with no internal composition), `layout/` (card, accordion, tabs, collapsible, scroll-area — structural components), and `form/` (select, toggle-group, form — react-hook-form-aware composites). Don't pre-create empty categories; add them (`overlay/`, `feedback/`, ...) only as components arrive that fit.
+Current categories: `primitives/` (button, badge, input, label, textarea — atoms with no internal composition) and `layout/` (card — structural component; plus a much larger `sidebar/` — `SidebarProvider`/`Sidebar`/`SidebarTrigger`/`SidebarRail`/`SidebarInset`/`SidebarInput`/`SidebarHeader`/`SidebarFooter`/`SidebarSeparator`/`SidebarContent`, the `SidebarGroup*`/`SidebarMenu*` families, and a `useSidebar()` hook, backed by sibling files `sidebar-constant.ts`, `sidebar.types.ts`, `sidebar.variants.ts`, plus private (not re-exported) helper components `separator.tsx`, `sheet.tsx`, `skeleton.tsx`, `tooltip.tsx`). `form/` (react-hook-form-aware composites, e.g. `select`, `toggle-group`, `form` wrapping [react-hook-form](https://react-hook-form.com/) as a `peerDependency`) hasn't been started yet. Don't pre-create empty categories; add them (`form/`, `overlay/`, `feedback/`, ...) only as components arrive that fit.
 
-`form/form` wraps [react-hook-form](https://react-hook-form.com/), which is a `peerDependency` (not a bundled `dependency`) — like `react`/`react-dom`, its `FormProvider`/`useFormContext` rely on a singleton React context, so bundling a second copy would risk a version mismatch with whatever the consuming app already uses.
+Variant definitions (`cva`) live in a sibling `<name>.variants.ts` file, and prop types in `<name>.types.ts`, next to the component (see `button/`). `badge/` follows the same split. **Note:** every primitive's barrel (`button/`, `badge/`, `input/`, `label/`, `textarea/`) currently only re-exports the component itself — `button/index.ts` and `badge/index.ts` still carry a comment claiming they also re-export `.variants`/`.types`, but the actual `export *` lines for those were dropped at some point and not yet restored, so `buttonVariants`/`ButtonProps`/`badgeVariants`/`BadgeProps` are not currently reachable from the public `@coreuix/ui` barrel. Flag this before relying on those exports from outside the package.
 
-Variant definitions (`cva`) live in a sibling `<name>.variants.ts` file, and prop types in `<name>.types.ts`, next to the component (see `button/`). `badge/` and `card/` follow the same split. `button/` and `badge/`'s barrels also re-export their `.variants`/`.types` files alongside the component (`export * from "./<name>.variants"`, `export * from "./<name>.types"`) — `input/`, `label/`, `textarea/`, and `card/` currently only re-export the component itself.
+`cva(...)` variant exports (`buttonVariants`, `cardVariants`, etc.) are deliberately left without an explicit ESLint `@typescript-eslint/typedef` type annotation — see "Linting" below.
 
 ### Path alias
 
-All internal imports use `@/*` -> `src/*` (defined in `tsconfig.json`, resolved at build time by tsup). Note: `components.json`'s `aliases` block (`@components`, `@utils`, `@hooks`, `@theme`) is only consumed by the **shadcn CLI** when scaffolding new files — it is not a real TypeScript path mapping. Don't rely on those aliases resolving in code; always use `@/...`.
+`tsconfig.json` defines real path mappings for `@components/*` -> `src/components/*`, `@theme/*` -> `src/theme/*`, `@utils/*` -> `src/utils/*`, and `@hooks/*` -> `src/hooks/*` (mirroring `components.json`'s `aliases` block, which the shadcn CLI uses for the same paths when scaffolding). Every barrel and component in the codebase imports through these category-scoped aliases (e.g. `@components/primitives/button/button`), not through relative paths — including a barrel re-exporting its own sibling file in the same folder. A catch-all `@/*` -> `src/*` mapping also exists in `tsconfig.json` but isn't used by convention. Both relative imports (`./`, `../`) and the `@/*` catch-all are hard-enforced ESLint errors (`no-restricted-imports`, see "Linting" below), not just a style preference.
+
+### Linting
+
+Beyond the standard `eslint:recommended` / `typescript-eslint` recommendedTypeChecked / React / `jsx-a11y` / Prettier presets, `eslint.config.js` also enforces:
+
+- `no-restricted-imports` — bans relative imports and the `@/*` catch-all (see "Path alias" above).
+- `@typescript-eslint/explicit-function-return-type` (`allowExpressions: true`) — every function/method needs a declared return type.
+- `@typescript-eslint/typedef` (`variableDeclaration`, `memberVariableDeclaration`, `propertyDeclaration`, `arrayDestructuring`, `objectDestructuring` all `true`) — every variable declaration and destructuring pattern (including `useState` tuples and `forwardRef` callback params) needs an explicit type annotation. Deliberate exception: `cva(...)` variant exports are left uninferred with a `// eslint-disable-next-line @typescript-eslint/typedef` comment explaining why — annotating them with `ReturnType<typeof cva>` collapses cva's literal variant-key narrowing and breaks real call sites like `buttonVariants({ variant, size })`.
+- `@typescript-eslint/no-unused-vars` (from recommendedTypeChecked) — also catches unused imports.
+- Prettier runs as an actual ESLint rule via `eslint-plugin-prettier` (`prettier/prettier: "error"`), governed by an explicit `.prettierrc.json` (semi, double quotes, `trailingComma: "all"`, 80-col width, 2-space tabs, LF) and `.prettierignore` (`dist`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`) rather than Prettier's implicit defaults.
+
+`pnpm build` runs `eslint .` first as a hard gate before `tsup`/Tailwind — any violation of the above fails the build.
 
 ### Theme system (`src/theme/`)
 
@@ -94,6 +106,10 @@ tokens/*.ts  ->  core/defaultTheme.ts  ->  core/createTheme(overrides)
 - `cn.ts` — `clsx` + `tailwind-merge` class combiner, used by every component.
 - `createVariants.ts` — thin re-export of `cva` (`class-variance-authority`), used to define per-component variant maps.
 - `deepMerge.ts` — recursive plain-object merge; the theme system's `mergeTheme` is built on this.
+
+### Hooks (`src/hooks/`)
+
+- `use-mobile.tsx` — `useIsMobile()`, an SSR-safe `matchMedia`-backed hook (lazy `useState` initializer, no synchronous `setState` in the effect body). Imported via `@hooks/use-mobile`. Used internally by `layout/sidebar`'s `SidebarProvider` to switch between the desktop and mobile (`Sheet`-based) sidebar rendering.
 
 ## Husky / lint-staged
 

@@ -38,47 +38,64 @@ code (a pre-existing React-level concern, not specific to this library).
 
 ## Supply chain / install-time execution
 
-- `package.json` currently has a `prepare` script (`husky && npm run build`). **Note:**
-  CLAUDE.md documents this repo as intentionally having _no_ `prepare` script, since pnpm blocks
-  lifecycle scripts by default and this was meant to keep `pnpm install` from silently building
-  or installing hooks. The current `package.json` and CLAUDE.md have drifted out of sync — worth
-  reconciling: either remove the `prepare` script to match the documented intent, or update
-  CLAUDE.md if the script was added back deliberately. Either way, understand _why_ before
-  changing it, since lifecycle scripts run arbitrary code for every consumer on `install`.
-- `dist/` is committed to git rather than generated on install, specifically so consumers using a
-  git-dependency install don't need any lifecycle script to run at all.
+- `package.json`'s `"prepare": "husky && npm run build"` script means `pnpm install` **does**
+  run lifecycle scripts here, deliberately: it installs the Husky pre-commit hook and runs a
+  full `pnpm build` for every clone/install. This is a real departure from a typical
+  side-effect-free library install — anyone running `pnpm install` on this repo executes
+  `eslint`, `tsup`, and `tailwindcss` locally. Because `pnpm build` itself is
+  `eslint . && tsup && tailwindcss ...`, a lint error in the working tree at install time will
+  fail the `prepare` step.
+- `dist/` is **gitignored**, not committed. There is currently no CI and no publish workflow, so
+  there is no working install path (git dependency, tarball, or registry) for an external
+  consumer yet — `dist/` only exists locally after `pnpm build` runs (via `prepare` or
+  manually). Don't assume a git-dependency install "just works" today; it doesn't produce a
+  `dist/` on its own without lifecycle scripts enabled.
 - Runtime dependencies (`@radix-ui/*`, `class-variance-authority`, `clsx`, `lucide-react`,
   `tailwind-merge`, `tailwindcss-animate`) are all well-known, widely-used packages with no
   native/postinstall build steps. Before adding a new runtime dependency, check it doesn't
   introduce one.
+- Since `pnpm install` now executes a full build (via `prepare`), treat `devDependencies` with
+  the same install-time-execution scrutiny as `dependencies` — a compromised dev tool in the
+  chain (ESLint plugin, tsup, Tailwind, Husky, Prettier) would run during `pnpm install`, not
+  just during an explicit `pnpm build`/`pnpm lint` invocation.
 
 ## Husky / lint-staged as a quality gate, not a security gate
 
-`lint-staged` runs `eslint --fix` + `prettier --write` on staged files via a Husky pre-commit
-hook and blocks the commit if lint errors remain. Note: `.husky/pre-commit` itself is **not
-currently tracked in git** (only Husky's internal `.husky/_` machinery is) — if you need this
-gate enforced, run `pnpm husky:init` and add a `pre-commit` script per CLAUDE.md. This is a code
--quality control, not a security control (ESLint here is not configured with a security-focused
-ruleset) — don't rely on it to catch injection-class bugs.
+`lint-staged` runs `eslint --fix` + `prettier --write` on staged `.ts`/`.tsx` files (and
+`prettier --write` on `.js/.cjs/.mjs/.json/.md/.css`) via a Husky pre-commit hook, and blocks the
+commit if lint errors remain. `.husky/pre-commit` (running `npx lint-staged`) **is tracked in
+git**, so this gate is active for anyone who clones and runs `pnpm install` — no separate manual
+setup step is needed. This is a code-quality control, not a security control: ESLint here is not
+configured with a security-focused ruleset (its rules are `explicit-function-return-type`,
+`typedef`, `no-restricted-imports` for import-path hygiene, `no-unused-vars`, and Prettier
+formatting) — don't rely on it to catch injection-class bugs.
 
 ## Publishing hygiene
 
-- Before tagging a release: bump `version`, run `pnpm build`, review the `dist/` diff (a
-  same-source-different-output diff usually means a stale/uncommitted source change or a build
-  tool change — check both), commit, then tag.
+- Before tagging a release: bump `version` in `package.json` and run `pnpm build`. Since `dist/`
+  is gitignored, there's no `git diff` of build output to sanity-check — verify by re-running
+  `pnpm build` locally and smoke-testing the emitted `dist/index.js`/`dist/index.cjs`/
+  `dist/styles.css` directly instead.
 - `package.json`'s `files` field (`dist`, `tailwind.config.ts`) controls what actually ships in
   the published tarball — review it if you add new top-level assets that should or shouldn't
-  ship.
+  ship. There is currently no CI and no registry-publish workflow, so "publishing" today means
+  producing a tarball or git dependency by hand.
 - No secrets, tokens, or `.env` files are expected in this repo; `.gitignore` covers `.env*.local`.
   If you ever see a credential-shaped string staged for commit, stop and double-check before
-  proceeding, per standard practice — this repo has no legitimate reason to contain one.
+  proceeding, per standard practice — this repo has no legitimate reason to contain one. As a
+  general rule, keep `.env`/config files with secrets out of version control entirely (confirm
+  they're covered by `.gitignore`, not just untracked by omission).
 
 ## Dependency updates
 
-- `peerDependencies` (`react`, `react-dom` `>=18`) are intentionally loose — this library doesn't
-  pin a consumer's React version. Runtime `dependencies` should still be kept current for
-  upstream security patches; there's no automated dependency-update tooling configured in this
-  repo currently, so updates are manual (`pnpm update` + `pnpm typecheck` + `pnpm build`).
+- `peerDependencies` (`react`, `react-dom` `>=18`, and `react-hook-form ^7`) are intentionally
+  loose/version-ranged — this library doesn't bundle these, so it doesn't pin a consumer's
+  installed version. `react-hook-form` is a peer (not a bundled `dependency`) specifically
+  because its `FormProvider`/`useFormContext` rely on a singleton React context; bundling a
+  second copy would risk a version mismatch with whatever the consumer already has installed —
+  the same reasoning as `react`/`react-dom`. Runtime `dependencies` should still be kept current
+  for upstream security patches; there's no automated dependency-update tooling configured in
+  this repo currently, so updates are manual (`pnpm update` + `pnpm typecheck` + `pnpm build`).
 
 ## What's out of scope here
 

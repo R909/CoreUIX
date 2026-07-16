@@ -15,9 +15,8 @@ library feels consistent to consumers.
     };
   ```
 
-- `Badge` uses `React.HTMLAttributes<HTMLSpanElement>` instead of `ComponentPropsWithoutRef`;
-  both are acceptable, prefer `ComponentPropsWithoutRef<"tag">` for new components as it's the
-  more precise/current pattern (matches `Button`).
+- `Badge` now also uses `React.ComponentPropsWithoutRef<"span">`, matching `Button`'s pattern —
+  prefer `ComponentPropsWithoutRef<"tag">` for new components.
 - Types live in a sibling `<name>.types.ts` file, not inline in the component file.
 
 ## Variant props (`cva`)
@@ -69,17 +68,21 @@ variant classes win over consumer overrides for conflicting Tailwind utilities.
 
 ## Exports per component
 
-A component's local `index.ts` barrel re-exports:
-
-1. The component itself.
-2. Its variant map, if one exists (so consumers can use `buttonVariants` standalone).
-3. Its prop types.
+A component's local `index.ts` barrel re-exports the component module for its category barrel to
+aggregate:
 
 ```ts
-export * from "@/components/primitives/button/Button";
-export * from "@/components/primitives/button/button.variants";
-export * from "@/components/primitives/button/Button.types";
+export * from "@components/primitives/button/button";
 ```
+
+Currently every primitive/layout component barrel (`button`, `badge`, `input`, `label`,
+`textarea`, `card`) re-exports only the component's own `.tsx` module this way — `.variants.ts`
+and `.types.ts` are not currently re-exported through the barrel as separate `export *` lines
+(the `sidebar` family is the exception: its `index.ts` separately re-exports `sidebar`,
+`sidebar.variants`, `sidebar.types`, and `sidebar-constant`). If you need `buttonVariants` or
+`ButtonProps` reachable from the package root, verify against the actual `index.ts` you're
+touching rather than assuming all three are always re-exported — this has been in flux recently
+(see git history on `button/index.ts` and `badge/index.ts`).
 
 ## Theme-facing API
 

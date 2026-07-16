@@ -1,2 +1,2 @@
 // Re-exports Label.
-export * from "./label";
+export * from "@components/primitives/label/label";

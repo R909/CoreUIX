@@ -4,6 +4,7 @@ import { cva } from "class-variance-authority";
 import { flex } from "@theme/tokens";
 
 // Base classes apply to every badge; `variant` sets the color style.
+// eslint-disable-next-line @typescript-eslint/typedef -- cva()'s generic return type narrows to this call's literal variant keys; annotating with ReturnType<typeof cva> widens it and breaks callers like `badgeVariants({ variant })`.
 export const badgeVariants = cva(
   `${flex.inlineCenter} rounded-[var(--cuix-radius-md)] border px-2 py-0.5 text-[var(--cuix-font-size-xs)] font-medium w-fit whitespace-nowrap shrink-0 gap-1 [&>svg]:size-3 [&>svg]:pointer-events-none focus-visible:border-[var(--cuix-colors-ring)] focus-visible:ring-[var(--cuix-colors-ring)]/50 focus-visible:ring-[3px] transition-[color,box-shadow] overflow-hidden`,
   {

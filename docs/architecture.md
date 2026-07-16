@@ -66,30 +66,42 @@ per render.
 
 Components consume theme values one of two ways:
 
-- **Preferred / newer pattern** (`button`): literal Tailwind arbitrary-value classes bound
-  directly to `--cuix-*` vars, e.g. `bg-[var(--cuix-colors-primary)]`. This stays in sync with
-  runtime theme overrides automatically.
-- **Older pattern** (`card`, partially `badge`): bare Tailwind semantic classes (`bg-card`,
+- **Preferred pattern**: literal Tailwind arbitrary-value classes bound directly to `--cuix-*`
+  vars, e.g. `bg-[var(--cuix-colors-primary)]`. This stays in sync with runtime theme overrides
+  automatically. Every current primitive (`button`, `badge`, `input`, `label`, `textarea`) and
+  `layout/card` (including its sub-parts) follows this pattern now.
+- **Legacy pattern**: bare Tailwind semantic classes (`bg-primary`, `text-foreground`,
   `text-muted-foreground`) that `tailwind.config.ts` maps onto the same `--cuix-*` variables.
   Functionally equivalent at the CSS-variable layer, but bypasses `useTheme()` for any component
-  logic that needs the value in JS.
+  logic that needs the value in JS. This still shows up in a few sub-parts of the
+  `layout/sidebar` family — `sheet.tsx`, `tooltip.tsx`, and `skeleton.tsx`.
 
 New components should default to the `--cuix-*`-var-driven pattern.
 
 ## Build & release flow
 
+The build script is a single gated pipeline (`package.json`'s `"build"` script):
+
 ```
 pnpm build
    │
+   ├─ eslint .        lints the whole repo first — any lint error (banned import path, missing
+   │                  return type, missing variable type annotation, unformatted file) fails the
+   │                  build before compilation runs
    ├─ tsup            src/index.ts → dist/index.js (ESM), dist/index.cjs (CJS), dist/index.d.ts
    └─ tailwindcss      src/styles.css → dist/styles.css (minified)
 ```
 
-`dist/` is committed to git (not gitignored) so git-based installs work without requiring a
-consumer to run lifecycle scripts. There is intentionally **no `prepare` script** that
-auto-builds on `pnpm install` (pnpm blocks lifecycle scripts by default) — `dist/` is built and
-committed explicitly before tagging a release. See [security.md](./security.md) for why this
-matters and [CLAUDE.md](../CLAUDE.md) for the exact release steps.
+`dist/` is **gitignored**, not committed — it's a local build artifact only. There is no CI and
+no npm-registry publish workflow yet, so there is currently no working install path (git
+dependency, tarball, or registry) for consumers: a fresh clone has no `dist/` until someone runs
+`pnpm build` locally.
+
+`package.json`'s `"prepare": "husky && npm run build"` script means `pnpm install` **does**
+install the Husky pre-commit hook and run a full `pnpm build` automatically (unlike a typical
+library where install is side-effect-free) — this is a deliberate departure from "no lifecycle
+scripts," not an oversight. See [security.md](./security.md) for the supply-chain implications
+and [CLAUDE.md](../CLAUDE.md) for the exact release steps (bump `version`, run `pnpm build`).
 
 ## Consumer integration surface
 

@@ -9,9 +9,12 @@
 
    The CLI reads `components.json`'s `aliases` block (`@components`, `@utils`,
    `@hooks`, `@theme`) and writes the generated file into a literal folder matching
-   that string (e.g. `@components/ui/<name>.tsx`) — those aliases are **not** real
-   TypeScript path mappings, just CLI scaffolding targets. You'll need to delete
-   that stray folder after relocating the file.
+   that string (e.g. a folder literally named `@components/ui/<name>.tsx` at the
+   repo root). These aliases now **do** match real `tsconfig.json` path mappings
+   (`@components/*`, `@utils/*`, `@hooks/*`, `@theme/*`), but the CLI still drops the
+   file in the wrong physical location relative to this repo's category folder
+   structure — you'll need to delete that stray folder after relocating the file
+   into `src/components/<category>/<name>/`.
 
    The CLI can also side-effect `tailwind.config.ts` and `package.json` when the new
    component needs new keyframes/animations or new `@radix-ui/react-*` dependencies
@@ -44,13 +47,22 @@
    - `<name>.tsx` — the component(s): `React.forwardRef` wrapping the Radix
      primitive (or plain element), applying `cn(xVariants(), className)` (plus any
      variant args the variants map needs, e.g. `cn(xVariants({ variant, size }), className)`),
-     and setting `.displayName`.
-   - `index.ts` — `export * from "@/components/<category>/<name>/<name>";`
+     and setting `.displayName`. The `const X = React.forwardRef<...>(...)` itself
+     needs an explicit type annotation (e.g.
+     `React.ForwardRefExoticComponent<XProps & React.RefAttributes<HTMLButtonElement>>`),
+     and the destructured props parameter inside the callback needs `: XProps`
+     written directly on it — both are required by this repo's
+     `@typescript-eslint/typedef`/`explicit-function-return-type` ESLint rules (see
+     `coding-standards.md` and `examples.md` for the exact pattern).
+   - `index.ts` — `export * from "@components/<category>/<name>/<name>";`
 
-4. **Rewrite every import**: shadcn's scaffolded file imports from
-   `@components/lib/utils` (or similar) — change to `@/utils/cn`, and change any
-   sibling-file imports (e.g. importing `toggleVariants` from another component's
-   `.variants.ts` file) to the `@/components/...` alias form.
+4. **Rewrite every import**: shadcn's scaffolded file imports from something like
+   `@components/lib/utils` — change to `@utils/cn`, and change any sibling-file
+   imports (e.g. importing another component's exported `cva` from its
+   `.variants.ts` file) to the full `@components/<category>/<name>/<name>.variants`
+   alias form. Never leave a relative (`./`, `../`) import or the bare `@/*`
+   catch-all in place — both are `no-restricted-imports` ESLint errors, even for a
+   barrel importing its own sibling `.tsx` file.
 
 5. **Tokenize the styling** — walk every class in the base classes and replace bare
    Tailwind semantic color/radius/shadow/font-size utilities with the matching
@@ -80,7 +92,7 @@
    just the arbitrary-value syntax) an entry in `tailwind.config.ts`.
 
 6. **Wire the barrels**: add the component to `<category>/index.ts`; if the
-   category itself is new, also add `export * from "@/components/<category>";` to
+   category itself is new, also add `export * from "@components/<category>";` to
    `src/components/index.ts`.
 
 7. **Verify**: `pnpm typecheck && pnpm lint && pnpm build` must all pass clean
@@ -93,9 +105,13 @@
 ## When to skip `.variants.ts` / `.types.ts`
 
 Some shadcn components are pure Radix passthroughs with no classes and no props of
-their own beyond what the underlying primitive already provides (e.g.
-`aspect-ratio` is just `const AspectRatio = AspectRatioPrimitive.Root`,
-`collapsible` just re-exports `Root`/`Trigger`/`Content`). For these:
+their own beyond what the underlying primitive already provides. No standalone
+primitive in this repo currently does this, but the pattern already exists as a
+private helper: `TooltipProvider`/`Tooltip`/`TooltipTrigger` in
+`src/components/layout/sidebar/tooltip.tsx` are each just
+`const X: typeof TooltipPrimitive.Y = TooltipPrimitive.Y;`, with no wrapping at
+all (only `TooltipContent`, which adds classes, gets a `forwardRef`). For a
+component like that:
 
 - Skip `.variants.ts` entirely — there's nothing to tokenize.
 - Skip `.types.ts` too if the component doesn't need its own exported prop type.
@@ -105,20 +121,27 @@ component doesn't need.
 
 ## Multi-part components
 
-When a component has sub-parts (`Card`/`CardHeader`/`CardTitle`/...,
-`Avatar`/`AvatarImage`/`AvatarFallback`, `Select`/`SelectTrigger`/`SelectContent`/...):
+When a component has sub-parts — e.g. `Card`/`CardHeader`/`CardTitle`/`CardDescription`/
+`CardContent`/`CardFooter`, or the much larger `Sidebar`/`SidebarHeader`/`SidebarFooter`/
+`SidebarGroup*`/`SidebarMenu*` family in `layout/sidebar/`:
 
 - Every sub-part that renders its own DOM node gets its own `cva` export in the
-  shared `.variants.ts`, its own type in `.types.ts`, and its own
-  `React.forwardRef` in `.tsx` with its own `.displayName`.
-- Sub-parts that are pure aliases with no wrapping needed (e.g. `SelectGroup =
-SelectPrimitive.Group`) don't need a `cva`/type/forwardRef — just re-export the
-  primitive directly, same as the original shadcn source does.
-- When a variant choice needs to flow from a root component down to its children
-  without prop-drilling (e.g. `size`/`variant` on a group-style component), use a
-  small `React.createContext` scoped to that component's own file, read via
-  `React.useContext` inside each child sub-part — don't reach for a
-  library-level state solution for this.
+  shared `.variants.ts` (or, for parts with no variant options of their own, just
+  base classes via `cn(...)` inline — `sidebar.tsx` mixes both, since only
+  `SidebarMenuButton` currently has a real `variants` map), its own type in
+  `.types.ts`, and its own `React.forwardRef` in `.tsx` with its own `.displayName`.
+- Sub-parts that are pure aliases with no wrapping needed (e.g. a hypothetical
+  `SelectGroup = SelectPrimitive.Group`) don't need a `cva`/type/forwardRef — just
+  re-export the primitive directly, same as the original shadcn source does.
+- When state needs to flow from a root component down to its children without
+  prop-drilling, use a small `React.createContext` scoped to that component's own
+  file, read via a `useX()` hook that throws if called outside its provider — see
+  `SidebarContext`/`useSidebar()` in `sidebar.tsx` for the real, current example
+  (it holds `state`/`open`/`setOpen`/`openMobile`/`setOpenMobile`/`isMobile`/
+  `toggleSidebar`, and `useSidebar()` throws `"useSidebar must be used within a
+SidebarProvider."` if the context is `null`). Note this differs from
+  `useTheme()`, which degrades gracefully to `defaultTheme` instead of throwing —
+  check the specific area's own precedent before assuming either behavior.
 
 ## Reusing another component's variants
 
@@ -126,4 +149,4 @@ It's fine — and preferred over duplicating classes — for one component's `.t
 import another component's exported `cva` function directly when the styling should
 be identical (e.g. a group-style wrapper around an existing toggle-style item
 reusing that item's own `xVariants` export rather than redefining the same classes).
-Import it via the full `@/components/<category>/<name>/<name>.variants` path.
+Import it via the full `@components/<category>/<name>/<name>.variants` path.

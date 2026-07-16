@@ -1,12 +1,14 @@
 import * as React from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "@utils/cn";
-import { badgeVariants } from "./badge.variants";
-import type { BadgeProps } from "./badge.types";
+import { badgeVariants } from "@components/primitives/badge/badge.variants";
+import type { BadgeProps } from "@components/primitives/badge/badge.types";
 
-const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
-  ({ className, variant, asChild = false, ...props }, ref) => {
-    const Comp = asChild ? Slot : "span";
+const Badge: React.ForwardRefExoticComponent<
+  BadgeProps & React.RefAttributes<HTMLSpanElement>
+> = React.forwardRef<HTMLSpanElement, BadgeProps>(
+  ({ className, variant, asChild = false, ...props }: BadgeProps, ref) => {
+    const Comp: React.ElementType = asChild ? Slot : "span";
 
     return (
       <Comp

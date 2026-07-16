@@ -6,8 +6,10 @@ import { cn } from "@utils/cn";
 import { textareaVariants } from "@components/primitives/textarea/textarea.variants";
 import type { TextareaProps } from "@components/primitives/textarea/textarea.types";
 
-const Textarea = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ className, ...props }, ref) => (
+const Textarea: React.ForwardRefExoticComponent<
+  TextareaProps & React.RefAttributes<HTMLTextAreaElement>
+> = React.forwardRef<HTMLTextAreaElement, TextareaProps>(
+  ({ className, ...props }: TextareaProps, ref) => (
     <textarea
       data-slot="textarea"
       className={cn(textareaVariants(), className)}

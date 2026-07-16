@@ -6,8 +6,10 @@ import { cn } from "@utils/cn";
 import { inputVariants } from "@components/primitives/input/input.variants";
 import type { InputProps } from "@components/primitives/input/input.types";
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref) => (
+const Input: React.ForwardRefExoticComponent<
+  InputProps & React.RefAttributes<HTMLInputElement>
+> = React.forwardRef<HTMLInputElement, InputProps>(
+  ({ className, type, ...props }: InputProps, ref) => (
     <input
       type={type}
       data-slot="input"

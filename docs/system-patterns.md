@@ -26,18 +26,26 @@ tokens (raw values) → defaultTheme (assembled) → createTheme (merge override
                                                                     React context      DOM CSS variables
 ```
 
-Adding a new design token means adding **one key** to `theme/models/Theme.ts` and **one default**
-to the matching `theme/tokens/*.ts` file — `generateCssVariables` walks each theme section via
-`Object.entries` automatically, so no other file changes. See
-[modules/theme.md](./modules/theme.md).
+Adding a token **within an existing section** means adding one key to `theme/models/Theme.ts`
+and one default to the matching `theme/tokens/*.ts` file — no other file changes.
+`generateCssVariables.ts`'s `flattenTheme` is a hand-enumerated per-section list
+(`FLAT_SECTIONS`/`SECTION_CSS_PREFIX`, plus `TYPOGRAPHY_SECTIONS` for nested `typography.*`
+sub-sections), not a generic walk — it throws at runtime if a top-level `CoreUIXTheme` section
+isn't accounted for in `FLAT_SECTIONS` or the deliberate `EXCLUDED_SECTIONS` list (currently just
+`flex`, whose tokens are pre-composed Tailwind class strings, not CSS values). So adding a whole
+new top-level theme **section** does require hand-wiring it into `flattenTheme` in
+`generateCssVariables.ts`. See [modules/theme.md](./modules/theme.md).
 
 ## 3. `cva` for variants, split into a sibling file
 
 Every styled component defines its variant classes with `class-variance-authority` (re-exported
 as `createVariants` from `src/utils/createVariants.ts`) in a sibling `<name>.variants.ts` file,
 not inline in the component. This keeps the component body focused on structure/behavior and
-makes the variant map independently importable (`buttonVariants` is re-exported for consumers
-who want it directly).
+makes the variant map independently importable. Note: as of the current source, most component
+barrels (`button`, `badge`, `input`, `label`, `textarea`, `card`) only re-export the component's
+own module, not the sibling `.variants.ts`/`.types.ts` files — see
+[api-patterns.md](./api-patterns.md#exports-per-component) for what's actually reachable through
+each barrel today.
 
 ## 4. `asChild` + Radix `Slot` for polymorphic rendering
 
@@ -63,10 +71,11 @@ This guarantees conflicting Tailwind utilities (`"p-2 p-4"` → `"p-4"`) resolve
 
 - **Preferred**: literal Tailwind arbitrary-value classes bound to `--cuix-*` vars
   (`bg-[var(--cuix-colors-primary)]`), as in `button.variants.ts`. Stays in sync with runtime
-  theme overrides.
-- **Legacy** (`card`, partially `badge`): bare Tailwind semantic classes (`bg-card`,
-  `text-muted-foreground`) mapped in `tailwind.config.ts`. Works, but doesn't route through
-  `useTheme()` for any JS-side logic.
+  theme overrides. Every current primitive (`button`, `badge`, `input`, `label`, `textarea`) and
+  `card` (including its sub-parts) follows this now.
+- **Legacy**: bare Tailwind semantic classes (`bg-primary`, `text-muted-foreground`) mapped in
+  `tailwind.config.ts`. Works, but doesn't route through `useTheme()` for any JS-side logic. This
+  shows up in a few `layout/sidebar` sub-parts — `sheet.tsx`, `tooltip.tsx`, `skeleton.tsx`.
 
 New components should default to the first pattern. See [architecture.md](./architecture.md).
 
@@ -78,18 +87,23 @@ without needing to repeat every sibling key. Arrays, functions, and non-plain ob
 as leaf values and replaced wholesale, never merged — this is intentional (merging an array by
 index is rarely what a caller wants).
 
-## 8. `forwardRef` for DOM-composable components
+## 8. `forwardRef` everywhere a DOM element is rendered
 
-Components that render a DOM element directly (`Card` and its sub-parts) use
-`React.forwardRef` so consumers can attach refs through to the underlying `<div>`. Components
-built on Radix `Slot` (`Button`, `Badge`) don't currently forward refs the same way — check
-existing usage before assuming ref-forwarding is universal.
+`React.forwardRef` is used consistently, not just for structural components. `Card` and its
+sub-parts forward refs to their underlying `<div>`s, and so do the Radix-`Slot`-based primitives
+`Button` and `Badge` (`React.ForwardRefExoticComponent<Props & React.RefAttributes<Element>>`,
+wrapping `asChild ? Slot : <tag>`), as does essentially every exported piece of the `sidebar`
+family. Treat ref-forwarding as the default for any new DOM-rendering component.
 
-## 9. Config-as-code, not generated at install time
+## 9. Build is gated by lint, and `pnpm install` builds the package
 
-There is no `prepare` lifecycle script; `dist/` is built and committed explicitly, and pnpm's
-lifecycle-script blocking is treated as a feature, not a gap to work around. Don't add
-`postinstall`/`prepare` scripts to "fix" this — see [security.md](./security.md) for why.
+`package.json`'s `"prepare": "husky && npm run build"` script means `pnpm install` installs the
+Husky pre-commit hook **and** runs a full `pnpm build` — this repo intentionally accepts
+lifecycle-script execution on install, rather than avoiding it. The `"build"` script itself is
+`eslint . && tsup && tailwindcss ...`, so any lint violation blocks the build (and therefore
+blocks `pnpm install` completing cleanly) before compilation even runs. `dist/` stays gitignored
+either way — it's never committed. See [security.md](./security.md) for the supply-chain
+implications of running a full build on install.
 
 ## 10. shadcn CLI output is relocated, never left flat
 
@@ -97,3 +111,27 @@ New components generated via `pnpm exec shadcn add <name>` land flat in
 `src/components/<name>.tsx` and must be moved by hand into the category/file-split structure
 described in [folder-structure.md](./folder-structure.md) — the flat output is a scaffolding
 step, not the final location.
+
+## 11. ESLint rules enforce the conventions above, not just style
+
+Beyond the standard recommended/react/jsx-a11y/prettier presets, `eslint.config.js` adds rules
+that make several of the patterns above mechanically enforced rather than just documented:
+
+- `no-restricted-imports` bans relative imports (`./`, `../`) and the `@/*` catch-all — every
+  import must go through `@components/*`, `@theme/*`, `@utils/*`, or `@hooks/*` (pattern 1 above),
+  even for a barrel re-exporting its own sibling file.
+- `@typescript-eslint/explicit-function-return-type` (`allowExpressions: true`) requires every
+  function/method to declare its return type.
+- `@typescript-eslint/typedef` requires an explicit type annotation on every variable
+  declaration, including destructuring. The one deliberate exception: `cva(...)` variant exports
+  (e.g. `buttonVariants`) carry a targeted `// eslint-disable-next-line @typescript-eslint/typedef`
+  — annotating them as `ReturnType<typeof cva>` would collapse `cva`'s literal variant-key type
+  narrowing and break real call sites like `buttonVariants({ variant, size })`.
+- `@typescript-eslint/no-unused-vars` catches unused imports too.
+- Prettier runs as a real lint rule (`eslint-plugin-prettier`), against an explicit
+  `.prettierrc.json` (semi, double quotes, trailing commas, printWidth 80, tabWidth 2, LF) and
+  `.prettierignore` (`dist`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`) — formatting drift is an
+  ESLint error, not just a `prettier --check` warning.
+
+Since `pnpm build` runs `eslint .` first (pattern 9 above), any violation of these rules blocks
+the build, not just the pre-commit hook.

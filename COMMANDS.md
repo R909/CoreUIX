@@ -5,21 +5,21 @@ Quick reference for developing, building, and releasing `@coreuix/ui`.
 ## Setup
 
 ```bash
-pnpm install          # installs deps only — no lifecycle scripts run
-pnpm husky:init       # one-time: installs the Husky pre-commit hook (contributors only)
+pnpm install          # installs deps AND runs "prepare": husky install + a full pnpm build
 ```
 
-There is deliberately **no** `prepare`/`postinstall`/`install` script in `package.json`.
-pnpm (v9+) treats any of those as a "build script" and refuses to run them for a
-git-hosted dependency unless the _consumer_ explicitly allowlists the package in their own
-`pnpm-workspace.yaml` (`onlyBuiltDependencies`) — it fails the whole `pnpm add
-<git-url>` outright (`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`) rather than skipping quietly.
-This package is distributed via the npm registry / tarball (see "Ship it to another
-project" below), not via git-based installs, so no consumer ever needs that script to run
-— but keeping it out of `package.json` entirely means installing this repo by git URL by
-accident (e.g. before reading the docs) fails fast instead of silently misbehaving on some
-package managers and not others. Run `pnpm husky:init` manually once after cloning this
-repo to develop it; it never runs for anyone who installs `@coreuix/ui` as a dependency.
+`package.json` has `"prepare": "husky && npm run build"`, so `pnpm install` in this repo
+has real side effects, unlike a typical library: it installs the Husky git hooks
+(`.husky/pre-commit`, tracked in git) and runs a full `pnpm build`, producing `dist/`.
+There is no separate manual init step — cloning and running `pnpm install` is enough to
+get a working `dist/` and an active pre-commit hook.
+
+Note this only applies to developing this repo directly. If you instead try to install
+`@coreuix/ui` itself as a git dependency from another project, pnpm (v9+) blocks
+`prepare`/`postinstall`/etc. for _any_ git-hosted dependency by default
+(`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`) unless the consumer explicitly allowlists it in
+their own `pnpm-workspace.yaml` — one more reason installing this package via a bare git
+URL isn't a supported path; see "Ship it to another project" below.
 
 ## Typecheck
 
@@ -36,14 +36,35 @@ pnpm format           # prettier --write .
 pnpm format:check     # prettier --check .
 ```
 
-Commits are also gated by a Husky pre-commit hook (`.husky/pre-commit`) that
-runs `lint-staged` — see `README.md` → "Linting & formatting".
+Beyond the standard recommended/React/jsx-a11y/Prettier presets, `eslint.config.js`
+enforces explicit function return types (`@typescript-eslint/explicit-function-return-type`),
+explicit types on every variable declaration and destructuring pattern
+(`@typescript-eslint/typedef`), a ban on relative imports and the `@/*` catch-all in favor
+of `@components/*`/`@theme/*`/`@utils/*`/`@hooks/*` (`no-restricted-imports`), and
+unused-import/-variable detection (`@typescript-eslint/no-unused-vars`). Prettier runs as
+a real lint rule (`eslint-plugin-prettier`), governed by an explicit `.prettierrc.json`
+and `.prettierignore` rather than Prettier's implicit defaults.
+
+Commits are also gated by a Husky pre-commit hook (`.husky/pre-commit`, tracked in git,
+active for anyone who has run `pnpm install` — see "Setup" above) that runs
+`lint-staged` — see `README.md` → "Linting & formatting".
+
+## Path aliases
+
+`tsconfig.json` (mirrored in `components.json`) maps `@components/*` → `src/components/*`,
+`@theme/*` → `src/theme/*`, `@utils/*` → `src/utils/*`, `@hooks/*` → `src/hooks/*`. The
+catch-all `@/*` → `src/*` also exists in `tsconfig.json` but isn't used by convention and
+is banned by the `no-restricted-imports` lint rule above.
 
 ## Build
 
 ```bash
-pnpm build            # tsup -> dist/ (ESM + CJS + .d.ts) + dist/styles.css
+pnpm build            # eslint . && tsup -> dist/ (ESM + CJS + .d.ts) && tailwindcss -> dist/styles.css
 ```
+
+`pnpm build` runs ESLint first as a hard gate (`eslint . && tsup && tailwindcss ...`) —
+any lint violation (a relative import, a missing return-type annotation, an untyped
+variable, an unformatted file) fails the build before `tsup`/Tailwind ever run.
 
 ## Add a new shadcn component
 
@@ -57,8 +78,11 @@ script in `package.json`, so it silently installs an unrelated real npm
 package with that name instead of running shadcn.
 
 Then move the generated file into its own folder under a category and add a
-local barrel (see `README.md` → "Adding more shadcn components" for the exact
-steps and current categories: `primitives/`, `layout/`).
+local barrel that re-exports through the aliased path, e.g.
+`echo 'export * from "@components/<category>/<name>/<name>";' > src/components/<category>/<name>/index.ts`
+— a relative `"./<name>"` re-export here is banned by lint (see "Lint & format" above).
+See `README.md` → "Adding more shadcn components" for the exact steps and current
+categories: `primitives/`, `layout/` (`form/` hasn't been started yet).
 
 ## Ship it to another project
 
@@ -68,9 +92,12 @@ pnpm pack                                    # -> coreuix-ui-<version>.tgz, inst
 pnpm link --global                           # then `pnpm link --global @coreuix/ui` in the other project
 ```
 
-Installing directly from a git URL is **not supported** — `dist/` isn't committed (see
-"Setup" above for why), so a git checkout has no built output. Use the npm registry
-(below) or a packed tarball instead.
+Installing directly from a git URL is **not supported** — `dist/` isn't committed, so a
+git checkout has no built output. Even if it were, pnpm (v9+) blocks
+`prepare`/`postinstall` scripts for git-hosted dependencies by default
+(`ERR_PNPM_GIT_DEP_PREPARE_NOT_ALLOWED`) unless the consumer allowlists the package in
+their own `pnpm-workspace.yaml`, so a build-on-install couldn't happen automatically
+anyway. Use the npm registry (below) or a packed tarball instead.
 
 ## Release a new version
 
@@ -81,7 +108,7 @@ npm publish                         # bundles dist/ into the tarball via the "fi
 git add -A                          # commit everything except dist/ (still gitignored)
 git commit -m "Release vX.Y.Z"
 git tag -a vX.Y.Z -m "vX.Y.Z"
-git push origin main --tags        # once a remote is configured
+git push origin master --tags      # once a remote is configured
 ```
 
 ## Useful checks

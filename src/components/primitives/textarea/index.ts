@@ -1,2 +1,2 @@
 // Re-exports Textarea.
-export * from "./textarea";
+export * from "@components/primitives/textarea/textarea";

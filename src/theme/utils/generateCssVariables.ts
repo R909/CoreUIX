@@ -7,6 +7,7 @@ export type DesignTokenMap = Record<string, string>;
 // Top-level theme sections that flatten straight to `--cuix-<prefix>-<key>` vars.
 // Typed against `keyof CoreUIXTheme` so adding a new theme section that isn't listed
 // here (and isn't in EXCLUDED_SECTIONS) is caught below instead of silently dropped.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof FLAT_SECTIONS)[number]` below relies on; a widened `readonly (keyof CoreUIXTheme)[]` annotation would break SECTION_CSS_PREFIX's Record key type.
 const FLAT_SECTIONS = [
   "colors",
   "radius",
@@ -34,6 +35,7 @@ const SECTION_CSS_PREFIX: Record<(typeof FLAT_SECTIONS)[number], string> = {
 };
 
 // Nested `typography.*` sub-sections that flatten to `--cuix-<prefix>-<key>` vars.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, which `(typeof TYPOGRAPHY_SECTIONS)[number]` below relies on; a widened annotation would break TYPOGRAPHY_CSS_PREFIX's Record key type.
 const TYPOGRAPHY_SECTIONS = [
   "fontFamily",
   "fontSize",
@@ -54,6 +56,7 @@ const TYPOGRAPHY_CSS_PREFIX: Record<
 // Theme sections deliberately excluded from CSS-variable generation: `flex` holds
 // pre-composed Tailwind class strings (e.g. "flex flex-row"), not CSS values, so
 // it isn't meaningful as a `var()` target — components read it via useTheme() instead.
+// eslint-disable-next-line @typescript-eslint/typedef -- `as const satisfies` gives this its literal tuple type, used verbatim in the `accountedFor` set below; a widened annotation isn't needed and only reduces precision.
 const EXCLUDED_SECTIONS = [
   "flex",
 ] as const satisfies readonly (keyof CoreUIXTheme)[];
@@ -68,17 +71,19 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   const tokens: DesignTokenMap = {};
 
   for (const section of FLAT_SECTIONS) {
-    const prefix = SECTION_CSS_PREFIX[section];
-    Object.entries(theme[section]).forEach(([key, value]) => {
+    const prefix: string = SECTION_CSS_PREFIX[section];
+    Object.entries(theme[section]).forEach(([key, value]: [string, string]) => {
       tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
     });
   }
 
   for (const section of TYPOGRAPHY_SECTIONS) {
-    const prefix = TYPOGRAPHY_CSS_PREFIX[section];
-    Object.entries(theme.typography[section]).forEach(([key, value]) => {
-      tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
-    });
+    const prefix: string = TYPOGRAPHY_CSS_PREFIX[section];
+    Object.entries(theme.typography[section]).forEach(
+      ([key, value]: [string, string]) => {
+        tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
+      },
+    );
   }
 
   tokens["--cuix-line-height"] = theme.typography.lineHeight;
@@ -87,12 +92,12 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
   // Fails loudly if a new top-level theme section is added to CoreUIXTheme without
   // wiring it into FLAT_SECTIONS or EXCLUDED_SECTIONS above — this is what let `flex`
   // silently fall through before instead of surfacing as an error.
-  const accountedFor = new Set<string>([
+  const accountedFor: Set<string> = new Set<string>([
     ...FLAT_SECTIONS,
     ...EXCLUDED_SECTIONS,
     "typography",
   ]);
-  const unhandledSections = (
+  const unhandledSections: (keyof CoreUIXTheme)[] = (
     Object.keys(theme) as (keyof CoreUIXTheme)[]
   ).filter((section) => !accountedFor.has(section));
   if (unhandledSections.length > 0) {

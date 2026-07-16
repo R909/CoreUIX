@@ -6,7 +6,7 @@ here is re-exported from the package root via `src/index.ts`.
 ## `cn.ts` — class-name combiner
 
 ```ts
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: ClassValue[]): string {
   return twMerge(clsx(inputs));
 }
 ```
@@ -40,7 +40,7 @@ export function deepMerge<T extends Record<string, unknown>>(
 ## `createVariants.ts` — variant-map factory
 
 ```ts
-export const createVariants = cva;
+export const createVariants: typeof cva = cva;
 export type { VariantProps } from "class-variance-authority";
 ```
 
@@ -48,14 +48,18 @@ export type { VariantProps } from "class-variance-authority";
   so components depend on this package's own `utils` surface rather than importing
   `class-variance-authority` directly, keeping that third-party dependency swappable in one
   place if it's ever replaced.
-- Every `<name>.variants.ts` file in `src/components/` is built with this.
+- Every `<name>.variants.ts` file in `src/components/` is built with this. Note that the
+  individual variant-map exports those files produce (`buttonVariants`, `badgeVariants`, ...) are
+  each annotated with a targeted `// eslint-disable-next-line @typescript-eslint/typedef` rather
+  than an explicit type — annotating them as `ReturnType<typeof cva>` would collapse `cva`'s
+  literal variant-key type narrowing and break call sites like `buttonVariants({ variant, size })`.
 
 ## Barrel (`index.ts`)
 
 ```ts
-export * from "@/utils/cn";
-export * from "@/utils/deepMerge";
-export * from "@/utils/createVariants";
+export * from "@utils/cn";
+export * from "@utils/deepMerge";
+export * from "@utils/createVariants";
 ```
 
 Re-exported wholesale from `src/index.ts` — consumers can `import { cn } from "@coreuix/ui"`.

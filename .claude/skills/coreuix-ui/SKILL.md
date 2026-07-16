@@ -40,9 +40,10 @@ layer, and no test runner configured.
 - **lucide-react** for icons
 - **tsup** for the build (`src/index.ts` → `dist/index.js`/`.cjs`/`.d.ts`), Tailwind CLI compiles `dist/styles.css` separately
 - **shadcn CLI** (`shadcn` package) to scaffold new components, configured via `components.json`
-- **ESLint 9 flat config** (`@typescript-eslint` recommendedTypeChecked, `eslint-plugin-react`, `react-hooks`, `jsx-a11y`, `eslint-config-prettier`) + **Prettier** (no `.prettierrc` — pure defaults)
+- **ESLint 9 flat config** (`@typescript-eslint` recommendedTypeChecked, `eslint-plugin-react`, `react-hooks`, `jsx-a11y`, `eslint-plugin-prettier/recommended`) with several strict repo-specific rules — `explicit-function-return-type`, `typedef`, `no-restricted-imports` banning relative/`@/*` imports — see `coding-standards.md` for the full list and the one deliberate exception (`cva()` exports)
+- **Prettier** — a real `.prettierrc.json` exists (double quotes, semicolons, trailing commas, printWidth 80) and is enforced as an ESLint error via `eslint-plugin-prettier`, not just a separate formatting step
 - **pnpm** as the package manager
-- **Husky** + **lint-staged** for a pre-commit gate
+- **Husky** + **lint-staged** for a pre-commit gate; `pnpm install` also runs a full `pnpm build` via the `prepare` script
 
 ## Folder structure
 
@@ -55,30 +56,47 @@ src/
     primitives/                # atoms with no internal composition
       index.ts
       button/
-        Button.tsx
-        Button.types.ts
+        button.tsx
+        button.types.ts
         button.variants.ts
         index.ts
-      badge/  input/  label/  textarea/  checkbox/  switch/  radio-group/
-      avatar/  separator/  skeleton/  toggle/  progress/  slider/  aspect-ratio/
+      badge/  input/  label/  textarea/   # all lowercase, same four-file split as button/
     layout/                    # structural / composing components
       index.ts
-      card/  accordion/  tabs/  collapsible/  scroll-area/
+      card/                    # Card + 5 sub-parts, one cva per sub-part
+      sidebar/                 # large compound component, see below
   theme/                       # token-driven theme system, see architecture.md
     tokens/*.ts  models/Theme.ts  core/{defaultTheme,mergeTheme,createTheme}.ts
     utils/{normalize,generateCssVariables,applyTheme,runtimeUpdate}.ts
     ThemeContext.tsx  ThemeProvider.tsx  useTheme.ts  index.ts
+  hooks/
+    use-mobile.tsx              # useIsMobile(), consumed by sidebar
   utils/
     cn.ts  createVariants.ts  deepMerge.ts  index.ts
 dist/                          # tsup + tailwindcss build output — gitignored, not committed
-components.json                # shadcn CLI config (aliases here are NOT real TS paths)
+components.json                # shadcn CLI config; its aliases now match real tsconfig paths (see architecture.md)
 tailwind.config.ts              # design-token-mapped config; also published as a preset
-CLAUDE.md / README.md / COMMANDS.md / docs/   # project docs (see note in coding-standards.md about drift)
+CLAUDE.md / README.md / COMMANDS.md / docs/   # project docs
 ```
 
-Current categories: `primitives/` and `layout/` (see the list above for the exact
-components in each — check the folder tree before assuming a component category, as
-this list changes over time).
+`layout/sidebar/` is the newest and largest addition: `sidebar.tsx` exports
+`SidebarProvider`, `Sidebar`, `SidebarTrigger`, `SidebarRail`, `SidebarInset`,
+`SidebarInput`, `SidebarHeader`/`Footer`/`Separator`/`Content`, the
+`SidebarGroup*` family, the `SidebarMenu*` family, and the `useSidebar()` hook,
+plus `sidebar.types.ts`, `sidebar.variants.ts` (`sidebarMenuButtonVariants`), and
+`sidebar-constant.ts` (width/cookie/keyboard-shortcut constants). It also bundles
+`separator.tsx`, `sheet.tsx` (wraps `@radix-ui/react-dialog`), `skeleton.tsx`, and
+`tooltip.tsx` (wraps `@radix-ui/react-tooltip`) as **private implementation
+helpers** used only by `sidebar.tsx` — they are not re-exported through
+`sidebar/index.ts` and are not standalone primitives in their own right. Some of
+these helper files still use bare Tailwind semantic classes (`bg-primary`,
+`bg-background`) rather than the `--cuix-*` tokenized pattern — known drift, not
+a pattern to copy into new components (see "Styling conventions").
+
+Current categories: `primitives/` (`button`, `badge`, `input`, `label`,
+`textarea`) and `layout/` (`card`, `sidebar`). `form/` does not exist yet. Check
+the folder tree (`find src/components -type f`) before assuming a component or
+category exists — this list changes over time.
 
 ## Architecture patterns
 
@@ -98,8 +116,11 @@ See `coding-standards.md` for the full ESLint/TS ruleset. Highlights:
 
 - Strict TypeScript (`strict: true`), no `any`-permissive escape hatches added casually.
 - `@typescript-eslint/consistent-type-imports` is a warning — prefer `import type` for type-only imports (see every existing component file).
+- `@typescript-eslint/explicit-function-return-type` (error) — every function/method needs an explicit return type, including inline arrow functions assigned to a typed `const`.
+- `@typescript-eslint/typedef` (error) — every variable declaration needs an explicit type annotation, including destructured `useState` tuples and destructured `forwardRef` props. The **one exception**: `cva(...)` variant exports (e.g. `buttonVariants`) are deliberately left uninferred, silenced with a targeted `eslint-disable-next-line` comment — see `coding-standards.md`/`examples.md` for the exact pattern.
+- `no-restricted-imports` (error) — relative imports (`./`, `../`) **and** the bare `@/*` catch-all alias are both banned repo-wide, even for a barrel re-exporting its own sibling file. Always use `@components/*`, `@theme/*`, `@utils/*`, `@hooks/*`.
 - `react/prop-types` is off (TypeScript is the source of truth for prop shapes).
-- No Prettier config file exists — formatting is 100% Prettier defaults; don't add a `.prettierrc` without discussing it first, since every existing file was written to match the defaults.
+- Prettier is enforced as an actual ESLint error (`eslint-plugin-prettier`), backed by a real `.prettierrc.json` — formatting violations fail `pnpm lint` and `pnpm build`, not just `pnpm format:check`.
 
 ## Component conventions
 
@@ -108,8 +129,10 @@ Every component (see `component-guidelines.md` for the step-by-step recipe):
 - Lives in `src/components/<category>/<name>/`.
 - Splits into up to four files: `<name>.tsx` (implementation), `<name>.variants.ts`
   (`cva` definitions), `<name>.types.ts` (prop types), `index.ts` (local barrel).
-  Components with zero styling/variants of their own (pure Radix re-exports, e.g.
-  `aspect-ratio`, `collapsible`) skip `.variants.ts`.
+  Components with zero styling of their own (pure Radix re-exports with no
+  classes) skip `.variants.ts` — see `TooltipProvider`/`Tooltip`/`TooltipTrigger`
+  in `src/components/layout/sidebar/tooltip.tsx` for the current real example of
+  this shape (though note that's a private helper, not a standalone primitive).
 - Uses `React.forwardRef` for anything wrapping a DOM element or a Radix primitive,
   and sets `.displayName`.
 - Exposes variants via `VariantProps<typeof xVariants>` intersected with the native
@@ -144,26 +167,30 @@ Every component (see `component-guidelines.md` for the step-by-step recipe):
 
 ## Import conventions
 
-- All internal imports use the `@/*` → `src/*` alias (defined in `tsconfig.json`,
-  resolved at build time by `tsup`). Never use relative `../../` imports across
-  component/category boundaries.
-- `components.json`'s `aliases` block (`@components`, `@utils`, `@hooks`, `@theme`)
-  is consumed **only** by the shadcn CLI when scaffolding new files into
-  `@components/ui/...` — it is not a real TypeScript path mapping and will not
-  resolve in hand-written code. Always rewrite shadcn's scaffolded imports to `@/...`
-  before moving the file into place.
+- All internal imports use the **category-scoped aliases** — `@components/*`,
+  `@theme/*`, `@utils/*`, `@hooks/*` — defined as real path mappings in both
+  `tsconfig.json` and `components.json`'s `aliases` block. Never use relative
+  `./`/`../` imports, even for a barrel re-exporting its own sibling file in the
+  same folder (e.g. `button/index.ts` is
+  `export * from "@components/primitives/button/button";`, not `"./button"`).
+- `tsconfig.json` also defines a catch-all `@/*` → `src/*` mapping, but it is **not
+  used by convention** and is actively banned by the `no-restricted-imports` ESLint
+  rule — always use the category-scoped alias that matches where the target file
+  lives instead.
+- Always rewrite shadcn's scaffolded imports (which use relative paths or its own
+  `@/...`-style conventions) to the category-scoped alias form before moving the
+  file into place.
 - Type-only imports use `import type { X } from "..."` (not just `import { type X }`),
   matching every existing `.types.ts` file.
 
 ## File naming conventions
 
-- Folder name and most file names are lowercase-kebab, matching the shadcn
-  component's registry name (`radio-group/`, `scroll-area/`, `toggle-group/`).
-- `button/` is the one legacy exception — `Button.tsx`/`Button.types.ts` are
-  PascalCase while `button.variants.ts`/`index.ts` are lowercase. Every component
-  added since `button` (including `badge`, `card`, and everything under
-  `primitives/`/`layout/`) uses fully lowercase file names matching the folder —
-  follow that (fully lowercase) convention for new components, not `button`'s.
+- Folder name and every file name are fully lowercase-kebab, matching the shadcn
+  component's registry name (`button.tsx`, `button.types.ts`, `button.variants.ts`;
+  a future multi-word component would follow `radio-group/`, `scroll-area/`
+  naming). `button/` previously had a PascalCase exception
+  (`Button.tsx`/`Button.types.ts`) — it has since been renamed to fully lowercase
+  to match every other component; don't reintroduce PascalCase filenames.
 
 ## State management patterns
 
@@ -174,15 +201,19 @@ present are:
 - **`ThemeContext`** (`src/theme/ThemeContext.tsx`) — a plain `React.createContext`
   defaulting to `defaultTheme`, read via the `useTheme()` hook. It does not throw
   when used outside a provider; it silently falls back to the default theme.
-- **Per-component internal state** via `React.useState`/`useId`/`useContext` scoped
-  to a single component tree, used when a compound component needs to share a value
-  between parent and children without prop-drilling (e.g. a toggle-group-style
-  component sharing `variant`/`size` from its root down to each item via its own
-  local context — check the component's own file for the exact pattern before
-  assuming one exists, since not every multi-part component needs this).
-- Controlled/uncontrolled behavior for form-like primitives (`Checkbox`, `Switch`,
-  `RadioGroup`, `Slider`, etc.) is delegated entirely to the underlying Radix
-  primitive — this repo's wrapper components don't add their own value/state logic.
+- **Per-component internal state** via `React.useState`/`useContext` scoped to a
+  single component tree, used when a compound component needs to share a value
+  between parent and children without prop-drilling. The current real example is
+  `SidebarContext`/`useSidebar()` in `layout/sidebar/sidebar.tsx` — unlike
+  `ThemeContext`, `useSidebar()` throws if called outside a `SidebarProvider`.
+  Check the component's own file for the exact pattern before assuming one exists,
+  since not every multi-part component needs this (`card/` has none).
+- No form-input primitives beyond `Input`/`Textarea`/`Label` currently exist in
+  this repo — there's no established controlled/uncontrolled convention yet for a
+  Radix-backed value primitive (e.g. a future `Checkbox`/`Switch`/`Select`). When
+  one is added, delegate value/state entirely to the underlying Radix primitive
+  rather than adding this repo's own value-tracking logic, consistent with how
+  every other Radix-backed component here stays a thin styled wrapper.
 
 ## API patterns
 
@@ -214,8 +245,12 @@ the user to make.
 ## Build commands
 
 ```bash
-pnpm build             # tsup -> dist/ (ESM + CJS + .d.ts) + tailwindcss -> dist/styles.css
+pnpm build             # eslint . && tsup -> dist/ (ESM + CJS + .d.ts) && tailwindcss -> dist/styles.css
 ```
+
+`pnpm build`'s script is literally `eslint . && tsup && tailwindcss ...` — a lint
+error (wrong import alias, missing type annotation, unformatted file) fails the
+build before any compilation happens, not just `pnpm lint` on its own.
 
 ## Development commands
 
@@ -249,22 +284,34 @@ pnpm exec shadcn add <name>   # scaffold a new shadcn component (never `pnpm add
   `.variants.ts` exporting a `cva` per sub-part, one `.types.ts` intersecting each
   part's native props with its own `VariantProps`, one `.tsx` with a
   `React.forwardRef` per part.
-- **Variant-map component**: see `button/` or `toggle/` — a single `cva` call with a
-  `variants: { variant: {...}, size: {...} }` map and `defaultVariants`.
-- **Zero-styling passthrough**: see `aspect-ratio/` or `collapsible/` — when a
-  shadcn component is just `const X = RadixPrimitive.Root` with no classes at all,
-  skip `.variants.ts` (and skip `.types.ts` too if there are no props of the
-  component's own to type) rather than creating an empty file for structural
-  symmetry.
+- **Variant-map component**: see `button/` or `badge/` — a single `cva` call with a
+  `variants: { variant: {...} }` (or `{ variant, size }`) map, `defaultVariants`,
+  and the `// eslint-disable-next-line @typescript-eslint/typedef` exemption
+  comment immediately above the export (see `examples.md`).
+- **Zero-styling passthrough**: no standalone primitive in this repo currently does
+  this, but the pattern exists as a private helper — see `TooltipProvider`/`Tooltip`/
+  `TooltipTrigger` in `src/components/layout/sidebar/tooltip.tsx`
+  (`const TooltipProvider: typeof TooltipPrimitive.Provider = TooltipPrimitive.Provider;`).
+  When a shadcn component is just a re-exported Radix primitive with no classes,
+  skip `.variants.ts` (and `.types.ts` too if there are no props of its own) rather
+  than creating an empty file for structural symmetry.
+- **Complex compound component with internal Context + hooks**: see `sidebar/` —
+  `SidebarContext`/`useSidebar()` in `sidebar.tsx` is the richest current example of
+  `typedef` (typed `useState` tuples), `explicit-function-return-type` (every
+  helper function and hook declares its return type), and a component-scoped
+  `React.createContext` used to share state across many sub-parts without
+  prop-drilling.
 
 ## Things to avoid
 
 - Never run `pnpm add <name>` to scaffold a shadcn component — it is pnpm's own
   "install a package" command and wins over the `"add": "shadcn add"` script,
   silently installing an unrelated real npm package instead.
-- Never leave a shadcn-scaffolded file using `@components/...` imports or sitting in
-  the flat `src/components/<name>.tsx` (or the literal `@components/ui/` folder the
-  CLI actually writes to) — always relocate and rewrite imports before considering
+- Never leave a shadcn-scaffolded file sitting in the flat `src/components/<name>.tsx`
+  (or the literal `@components/ui/` folder the CLI actually writes to), or still
+  using the CLI's own scaffolded import paths — always relocate into
+  `src/components/<category>/<name>/` and rewrite every import to this repo's
+  category-scoped aliases (`@components/*`, `@utils/*`, etc.) before considering
   the component done.
 - Don't invent a new component category (`overlay/`, `feedback/`, ...) speculatively;
   only add one when a component that genuinely needs it is being added.
@@ -273,11 +320,14 @@ pnpm exec shadcn add <name>   # scaffold a new shadcn component (never `pnpm add
 - Don't add a testing framework, a global state library, or an API/data client as a
   side effect of another task — none currently exist in this repo, and adding one is
   an explicit, standalone decision.
-- Be aware `CLAUDE.md`, `README.md`, and `COMMANDS.md` disagree with each other and
-  with the actual repository state on a few points (whether `dist/` is committed,
-  whether a `prepare` script exists) — see `coding-standards.md` for the verified
-  ground truth and don't take any single doc file's claim at face value without
-  checking `package.json`/`.gitignore` first.
+- Never write a relative (`./`, `../`) import or the bare `@/*` alias — both are
+  ESLint errors (`no-restricted-imports`). Always use `@components/*`, `@theme/*`,
+  `@utils/*`, `@hooks/*`.
+- Don't add a variable, destructured parameter, or function without an explicit
+  type annotation/return type — `@typescript-eslint/typedef` and
+  `explicit-function-return-type` are ESLint errors, not warnings. The only
+  exception is a `cva(...)` export, which must stay uninferred (see
+  `coding-standards.md`).
 
 ## Checklist before creating new code
 
@@ -290,7 +340,9 @@ pnpm exec shadcn add <name>   # scaffold a new shadcn component (never `pnpm add
 4. Rewrite every bare Tailwind semantic color/radius/shadow/font-size class to the
    matching `--cuix-*` arbitrary-value class; add a new theme token only if nothing
    existing matches (four files to touch — see "Styling conventions").
-5. Rewrite `@components/...` imports to `@/...`.
+5. Rewrite the CLI's scaffolded imports to this repo's category-scoped aliases
+   (`@components/*`, `@utils/*`, `@theme/*`, `@hooks/*`) — never `@/*` or a
+   relative path.
 6. Wire the component into `<category>/index.ts`, and into `components/index.ts` too
    if the category itself is new.
 7. Run `pnpm typecheck && pnpm lint && pnpm build` — all three must pass clean.

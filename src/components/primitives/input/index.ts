@@ -1,2 +1,2 @@
 // Re-exports Input.
-export * from "./input";
+export * from "@components/primitives/input/input";

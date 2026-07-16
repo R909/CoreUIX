@@ -1,8 +1,8 @@
 // Writes CSS variables onto the document root.
 export function applyTheme(cssVariables: Record<string, string>): void {
-  const root = document.documentElement;
+  const root: HTMLElement = document.documentElement;
 
-  Object.entries(cssVariables).forEach(([name, value]) => {
+  Object.entries(cssVariables).forEach(([name, value]: [string, string]) => {
     root.style.setProperty(name, value);
   });
 }

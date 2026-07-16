@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo } from "react";
-import type { ReactNode } from "react";
+import type { ReactElement, ReactNode } from "react";
 
 import { ThemeContext } from "@theme/ThemeContext";
 import { createTheme } from "@theme/core";
@@ -15,8 +15,11 @@ interface ThemeProviderProps {
 }
 
 // Provides the merged theme to the app and syncs it to CSS variables.
-export function ThemeProvider({ children, theme = {} }: ThemeProviderProps) {
-  const mergedTheme = useMemo(() => createTheme(theme), [theme]);
+export function ThemeProvider({
+  children,
+  theme = {},
+}: ThemeProviderProps): ReactElement {
+  const mergedTheme: CoreUIXTheme = useMemo(() => createTheme(theme), [theme]);
 
   // Update CSS variables whenever the theme changes.
   useEffect(() => {

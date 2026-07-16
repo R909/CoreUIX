@@ -4,17 +4,19 @@ Shared component library for CoreUIX, built on shadcn/ui + Tailwind CSS.
 
 ## Structure
 
-- `src/components/<category>/<name>/` — each component lives in its own folder (e.g. `src/components/primitives/button/button.tsx`), with a local `index.ts` barrel (`export * from "./button"`). Co-locating a component's tests/stories/types alongside it later is a drop-in, not a restructure.
-- `src/components/<category>/index.ts` — aggregates every component barrel within that category (e.g. `primitives/index.ts` re-exports `button` and `badge`).
+- `src/components/<category>/<name>/` — each component lives in its own folder (e.g. `src/components/primitives/button/button.tsx`), with a local `index.ts` barrel that re-exports through the aliased path (`export * from "@components/primitives/button/button"` — relative imports are banned by lint, see "Linting & formatting" below). Co-locating a component's tests/stories/types alongside it later is a drop-in, not a restructure.
+- `src/components/<category>/index.ts` — aggregates every component barrel within that category (e.g. `primitives/index.ts` re-exports `button`, `badge`, `input`, `label`, `textarea`).
 - `src/components/index.ts` — aggregates every category barrel; this is the only file that changes when a whole new category is introduced.
-- `src/lib/` — shared utilities (`cn`, etc).
-- `src/index.ts` — the package's public API (barrel export), re-exports `src/components` and `src/lib/utils`.
+- `src/utils/` — shared utilities (`cn`, `createVariants`, `deepMerge`).
+- `src/hooks/` — shared React hooks (e.g. `use-mobile.tsx` / `useIsMobile`), imported via the `@hooks/*` alias.
+- `src/index.ts` — the package's public API (barrel export), re-exports `src/components`, `src/utils`, and `src/theme`.
 - `dist/` — build output from `tsup`, this is what gets published/consumed. **Gitignored, not committed** — `npm pack`/`npm publish` bundle it into the tarball directly off disk via the `"files"` field in `package.json`, independent of git tracking, so it never needs to live in git history. Run `pnpm build` locally before packing/publishing — see "Using it in another project" below.
 
 Current categories:
 
-- `primitives/` — atoms with no internal composition (`button`, `badge`)
-- `layout/` — structural components (`card`)
+- `primitives/` — atoms with no internal composition (`button`, `badge`, `input`, `label`, `textarea`)
+- `layout/` — structural components (`card`, and a much larger `sidebar/` set — `SidebarProvider`, `Sidebar`, `SidebarTrigger`, `SidebarRail`, `SidebarInset`, the `SidebarGroup*`/`SidebarMenu*` families, a `useSidebar` hook, plus sibling primitives it depends on: `separator`, `sheet`, `skeleton`, `tooltip`)
+- `form/` hasn't been started yet — don't add it until components arrive that fit.
 
 Add new categories (`overlay/`, `form/`, `feedback/`, ...) as components arrive that fit them — don't pre-create empty ones.
 
@@ -22,13 +24,12 @@ Add new categories (`overlay/`, `form/`, `feedback/`, ...) as components arrive 
 
 ```bash
 pnpm install
-pnpm husky:init      # one-time: installs the Husky pre-commit hook
 ```
 
-`husky:init` is a manual step, not an automatic `prepare` script — pnpm (v9+) refuses to
-run `prepare`/`postinstall` for a git-hosted dependency unless a consumer explicitly
-allowlists it, so this package intentionally ships with no lifecycle scripts at all (see
-`COMMANDS.md` → "Setup" for the full explanation).
+`pnpm install` runs the `prepare` script automatically, which runs `husky` (installs the
+git hooks, including the pre-commit hook below) **and** a full `pnpm build` — so, unlike a
+typical library, installing this repo's own deps has real side effects: it builds `dist/`
+and wires up Husky in one step. There is no separate manual init command to run.
 
 ## Linting & formatting
 
@@ -39,10 +40,32 @@ pnpm format          # prettier --write .
 pnpm format:check    # prettier --check .
 ```
 
-Once `pnpm husky:init` has been run, a Husky pre-commit hook runs `lint-staged` on
-every commit: staged `.ts`/`.tsx` files are auto-fixed with ESLint and formatted with
-Prettier, and the commit is blocked if lint errors remain unresolved. VS Code users get
-the same checks live via the recommended extensions in `.vscode/extensions.json`.
+`pnpm build` itself runs `eslint .` first, as a gate — the full command is
+`eslint . && tsup && tailwindcss ...`, so any lint violation (a relative import,
+a missing return-type annotation, an untyped variable/destructure, an unformatted
+file) fails the build before any compilation happens. Beyond the standard
+recommended/React/jsx-a11y/Prettier presets, `eslint.config.js` also enforces:
+
+- `@typescript-eslint/explicit-function-return-type` — every function/method needs a declared return type.
+- `@typescript-eslint/typedef` — every variable declaration and destructuring pattern needs an explicit type annotation.
+- `no-restricted-imports` — relative imports (`./`, `../`) and the catch-all `@/*` alias are banned repo-wide; use the category-scoped aliases `@components/*`, `@theme/*`, `@utils/*`, `@hooks/*` instead, even for a barrel re-exporting its own sibling file.
+- `@typescript-eslint/no-unused-vars` — also catches unused imports.
+- Prettier runs as a real ESLint rule (`eslint-plugin-prettier`), not just a separate `prettier --check` step; formatting is defined explicitly in `.prettierrc.json` (semicolons, double quotes, trailing commas, 80-col width, 2-space tabs, LF) and `.prettierignore` (`dist`, `pnpm-lock.yaml`, `pnpm-workspace.yaml`).
+
+Since `pnpm install` already runs `prepare` (see "Developing" above), the Husky
+pre-commit hook (`.husky/pre-commit`, tracked in git) is active for anyone who installs
+this repo. It runs `lint-staged` on every commit: staged `.ts`/`.tsx` files are
+auto-fixed with ESLint and formatted with Prettier (other staged `.js`/`.cjs`/`.mjs`/
+`.json`/`.md`/`.css` files are formatted with Prettier only), and the commit is blocked
+if lint errors remain unresolved.
+
+## Path aliases
+
+`tsconfig.json` (mirrored in `components.json`) maps `@components/*` → `src/components/*`,
+`@theme/*` → `src/theme/*`, `@utils/*` → `src/utils/*`, and `@hooks/*` → `src/hooks/*`.
+A catch-all `@/*` → `src/*` also exists but isn't used by convention and is actively
+banned by the `no-restricted-imports` lint rule above — always prefer the category-scoped
+alias that matches where the target file lives.
 
 ## Adding more shadcn components
 
@@ -61,11 +84,12 @@ its own folder under the right category and add a local barrel:
 ```bash
 mkdir -p src/components/<category>/<name>
 mv src/components/<name>.tsx src/components/<category>/<name>/<name>.tsx
-echo 'export * from "./<name>";' > src/components/<category>/<name>/index.ts
+echo 'export * from "@components/<category>/<name>/<name>";' > src/components/<category>/<name>/index.ts
 ```
 
 Then re-export it from `src/components/<category>/index.ts` (create that file if the
-category is new, and add `export * from "./<category>";` to `src/components/index.ts`).
+category is new, and add `export * from "@components/<category>";` to
+`src/components/index.ts`).
 
 ## Building the library
 

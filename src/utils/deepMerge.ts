@@ -17,8 +17,8 @@ export function deepMerge<T extends Record<string, unknown>>(
 ): T {
   const result: Record<string, unknown> = { ...target };
 
-  Object.entries(source).forEach(([key, sourceValue]) => {
-    const targetValue = result[key];
+  Object.entries(source).forEach(([key, sourceValue]: [string, unknown]) => {
+    const targetValue: unknown = result[key];
 
     result[key] =
       isPlainObject(targetValue) && isPlainObject(sourceValue)
