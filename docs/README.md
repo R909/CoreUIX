@@ -29,11 +29,12 @@ tokens (src/theme/tokens) → defaultTheme → createTheme(overrides) → CoreUI
 ```
 
 Components (`src/components/`) consume the theme via `--cuix-*` CSS variables — every current
-primitive (`button`, `badge`, `input`, `label`, `textarea`) and `layout/card` follows this
-pattern. A few sub-parts of the `layout/sidebar` family (`sheet`, `tooltip`, `skeleton`) still
-use bare Tailwind semantic classes (`bg-primary`, `text-muted-foreground`) that map to the same
-variables through `tailwind.config.ts` — see [architecture.md](./architecture.md) for which
-pattern is preferred for new components.
+`primitives/` component (`button`, `badge`, `input`, `label`, `textarea`, `toggle`, `checkbox`,
+`text`, `tabs`, `select`, `command`, `popover`, `multi-select`) and `layout/card`/`layout/table`
+follows this pattern. A few sub-parts of the `layout/sidebar` family (`sheet`, `tooltip`,
+`skeleton`) still use bare Tailwind semantic classes (`bg-primary`, `text-muted-foreground`) that
+map to the same variables through `tailwind.config.ts` — see [architecture.md](./architecture.md)
+for which pattern is preferred for new components.
 
 See [CLAUDE.md](../CLAUDE.md) in the repo root for day-to-day commands (build, lint, adding a
 shadcn component, releasing). This `docs/` folder is the deeper reference; CLAUDE.md stays

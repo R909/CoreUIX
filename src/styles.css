@@ -33,6 +33,38 @@
     --cuix-colors-ring: #2563eb;
     --cuix-colors-transparent: transparent;
 
+    /* Additive app-side palette tokens (light). */
+    --cuix-colors-text: #111827;
+    --cuix-colors-text-secondary: #6b7280;
+    --cuix-colors-notification: #ef4444;
+    --cuix-colors-error: #ef4444;
+    --cuix-colors-disabled: #d1d5db;
+    --cuix-colors-placeholder: #8e9da6;
+    --cuix-colors-overlay: rgba(0, 0, 0, 0.4);
+    --cuix-colors-white: #ffffff;
+    --cuix-colors-black: #000000;
+    --cuix-colors-gradient-colors: #4f46e5, #06b6d4;
+    --cuix-colors-card-background: #0f2a44;
+    --cuix-colors-tint-golden: #ffd166;
+    --cuix-colors-tint-golden-background: #fff4cc;
+    --cuix-colors-tint-cyan: #4ecdc4;
+    --cuix-colors-tint-cyan-background: #ddf7f5;
+    --cuix-colors-tint-blue: #4299e1;
+    --cuix-colors-tint-blue-background: #e7f2fd;
+    --cuix-colors-tint-purple: #858de5;
+    --cuix-colors-tinit-purple-background: #eceeff;
+    --cuix-colors-light-white: #ffffff9e;
+    --cuix-colors-yellow: #fcd34d;
+    --cuix-colors-gradient-start: #1da1f2;
+    --cuix-colors-gradient-end: #74d2ff;
+    --cuix-colors-user-info-card-text: #fff;
+    --cuix-colors-grey: #a0aec0;
+    --cuix-colors-service-bg: #0f2a44;
+    --cuix-colors-toggle-bg: #192d44;
+    --cuix-colors-toggle-btn-bg: #d1d5db;
+    --cuix-colors-main-app-bg: #0c1221;
+    --cuix-colors-cyan-blue: #11ccf2;
+
     /* Border radius values. */
     --cuix-radius-sm: 6px;
     --cuix-radius-md: 8px;
@@ -254,6 +286,38 @@
     --cuix-colors-border: #262626;
     --cuix-colors-input: #262626;
     --cuix-colors-ring: #d4d4d4;
+
+    /* Additive app-side palette tokens (dark). */
+    --cuix-colors-text: #ffffff;
+    --cuix-colors-text-secondary: #9ca3af;
+    --cuix-colors-notification: #f87171;
+    --cuix-colors-error: #f87171;
+    --cuix-colors-disabled: #4b5563;
+    --cuix-colors-placeholder: #6b7280;
+    --cuix-colors-overlay: rgba(0, 0, 0, 0.6);
+    --cuix-colors-white: #ffffff;
+    --cuix-colors-black: #000000;
+    --cuix-colors-gradient-colors: #4f46e5, #06b6d4;
+    --cuix-colors-card-background: #0f2a44;
+    --cuix-colors-tint-golden: #ffd166;
+    --cuix-colors-tint-golden-background: #ffd16665;
+    --cuix-colors-tint-cyan: #4ecdc4;
+    --cuix-colors-tint-cyan-background: #4ecdc465;
+    --cuix-colors-tint-blue: #4299e1;
+    --cuix-colors-tint-blue-background: #3c84bf4c;
+    --cuix-colors-tint-purple: #858de5;
+    --cuix-colors-tinit-purple-background: #858de555;
+    --cuix-colors-light-white: #ffffff9e;
+    --cuix-colors-yellow: #fcd34d;
+    --cuix-colors-gradient-start: #1da1f2;
+    --cuix-colors-gradient-end: #74d2ff;
+    --cuix-colors-user-info-card-text: #fff;
+    --cuix-colors-grey: #a0aec0;
+    --cuix-colors-service-bg: #0f2a44;
+    --cuix-colors-toggle-bg: #192d44;
+    --cuix-colors-toggle-btn-bg: #d1d5db;
+    --cuix-colors-main-app-bg: #0c1221;
+    --cuix-colors-cyan-blue: #11ccf2;
 
     /* Sidebar palette. */
     --cuix-sidebar-background: #18181b;

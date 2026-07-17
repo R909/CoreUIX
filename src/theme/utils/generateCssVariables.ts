@@ -146,9 +146,13 @@ function flattenTheme(theme: CoreUIXTheme): DesignTokenMap {
 
   for (const section of FLAT_SECTIONS) {
     const prefix: string = SECTION_CSS_PREFIX[section];
-    Object.entries(theme[section]).forEach(([key, value]: [string, string]) => {
-      tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = value;
-    });
+    Object.entries(theme[section]).forEach(
+      ([key, value]: [string, string | string[]]) => {
+        tokens[`--cuix-${prefix}-${camelToKebab(key)}`] = Array.isArray(value)
+          ? value.join(", ")
+          : value;
+      },
+    );
   }
 
   for (const section of TYPOGRAPHY_SECTIONS) {

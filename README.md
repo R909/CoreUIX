@@ -14,8 +14,8 @@ Shared component library for CoreUIX, built on shadcn/ui + Tailwind CSS.
 
 Current categories:
 
-- `primitives/` — atoms with no internal composition (`button`, `badge`, `input`, `label`, `textarea`)
-- `layout/` — structural components (`card`, and a much larger `sidebar/` set — `SidebarProvider`, `Sidebar`, `SidebarTrigger`, `SidebarRail`, `SidebarInset`, the `SidebarGroup*`/`SidebarMenu*` families, a `useSidebar` hook, plus sibling primitives it depends on: `separator`, `sheet`, `skeleton`, `tooltip`)
+- `primitives/` — atoms with no internal composition: `button`, `badge`, `input`, `label`, `textarea`, `toggle`, `checkbox`, `text`, `tabs`, `select`, `command` (built on `cmdk`, not Radix), `popover`, and `multi-select` (composes `popover` + `command` + `button` + `badge`; the one primitive with no underlying Radix primitive, so it tracks selection state via its own `MultiSelectContext` instead)
+- `layout/` — structural components (`card`, `table` — static Table/TableHeader/TableBody/TableFooter/TableRow/TableHead/TableCell/TableCaption with no sorting/filtering/pagination logic of its own, and a much larger `sidebar/` set — `SidebarProvider`, `Sidebar`, `SidebarTrigger`, `SidebarRail`, `SidebarInset`, the `SidebarGroup*`/`SidebarMenu*` families, a `useSidebar` hook, plus sibling primitives it depends on: `separator`, `sheet`, `skeleton`, `tooltip`)
 - `form/` hasn't been started yet — don't add it until components arrive that fit.
 
 Add new categories (`overlay/`, `form/`, `feedback/`, ...) as components arrive that fit them — don't pre-create empty ones.

@@ -76,13 +76,18 @@ export * from "@components/primitives/button/button";
 ```
 
 Currently every primitive/layout component barrel (`button`, `badge`, `input`, `label`,
-`textarea`, `card`) re-exports only the component's own `.tsx` module this way — `.variants.ts`
+`textarea`, `toggle`, `checkbox`, `text`, `tabs`, `select`, `command`, `popover`, `multi-select`,
+`card`, `table`) re-exports only the component's own `.tsx` module this way — `.variants.ts`
 and `.types.ts` are not currently re-exported through the barrel as separate `export *` lines
 (the `sidebar` family is the exception: its `index.ts` separately re-exports `sidebar`,
-`sidebar.variants`, `sidebar.types`, and `sidebar-constant`). If you need `buttonVariants` or
-`ButtonProps` reachable from the package root, verify against the actual `index.ts` you're
-touching rather than assuming all three are always re-exported — this has been in flux recently
-(see git history on `button/index.ts` and `badge/index.ts`).
+`sidebar.variants`, `sidebar.types`, and `sidebar-constant`). Most of these barrels' own comments
+claim they also re-export `.variants`/`.types` (e.g. `command/index.ts` says "Re-exports Command
+and its sub-parts, variants, and prop types"), but the code doesn't match the comment — `tabs` is
+the only one whose comment doesn't make this claim. If you need `buttonVariants`/`ButtonProps`,
+`commandVariants`, or any other `*Variants`/`*Props` reachable from the package root, verify
+against the actual `index.ts` you're touching rather than trusting its comment — this has been in
+flux since the earliest components (see git history on `button/index.ts` and `badge/index.ts`)
+and the drift has carried forward into every component added since.
 
 ## Theme-facing API
 

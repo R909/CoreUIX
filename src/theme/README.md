@@ -19,8 +19,12 @@ overrides, and pushed to the DOM as CSS custom properties (`--cuix-*`).
 | `tokens/widthTokens.ts`         | Width scale (`full` / `screen` / `auto` / `fit` / `min` / `max`).                                                                                                                                                                                                                                                                                                                                                                                  |
 | `tokens/heightTokens.ts`        | Height scale (`full` / `screen` / `auto` / `fit` / `min` / `max`).                                                                                                                                                                                                                                                                                                                                                                                 |
 | `tokens/sidebarTokens.ts`       | Sidebar-specific color palette (`background`/`foreground`/`primary`/`primaryForeground`/`accent`/`accentForeground`/`border`/`ring`), consumed by `src/components/layout/sidebar`.                                                                                                                                                                                                                                                                 |
+| `tokens/borderTokens.ts`        | `border.width` (`none`/`thin`/`thick`) and `border.style` (`solid`/`dashed`/`dotted`/`none`).                                                                                                                                                                                                                                                                                                                                                      |
+| `tokens/opacityTokens.ts`       | `opacity` scale (`none`/`disabled`/`hover`/`full`) for disabled states, overlays, hover dimming.                                                                                                                                                                                                                                                                                                                                                   |
+| `tokens/transitionTokens.ts`    | `transition.duration` (`fast`/`normal`/`slow`) and `transition.easing` (`linear`/`in`/`out`/`inOut`).                                                                                                                                                                                                                                                                                                                                              |
+| `tokens/textTokens.ts`          | `text.color` (semantic text colors) plus size-keyed style presets `text.heading`/`text.body`/`text.caption`/`text.label` (each `{ fontSize, fontWeight, lineHeight }` per size), and `text.decoration`/`text.transform`/`text.overflow`/`text.whiteSpace`/`text.align`. Consumed by `src/components/primitives/text`.                                                                                                                              |
 | `tokens/index.ts`               | Barrel export of all token modules.                                                                                                                                                                                                                                                                                                                                                                                                                |
-| `models/Theme.ts`               | `CoreUIXTheme` — the full theme shape every token/module conforms to. Top-level sections: `colors`, `radius`, `spacing`, `shadow`, `zIndex`, `breakpoints`, `width`, `height`, `typography`, `flex`, `sidebar`.                                                                                                                                                                                                                                    |
+| `models/Theme.ts`               | `CoreUIXTheme` — the full theme shape every token/module conforms to. Top-level sections: `colors`, `radius`, `spacing`, `shadow`, `zIndex`, `breakpoints`, `border`, `opacity`, `transition`, `width`, `height`, `typography`, `flex`, `sidebar`, `text`.                                                                                                                                                                                         |
 | `models/DeepPartial.ts`         | Recursive partial helper type, used for theme overrides.                                                                                                                                                                                                                                                                                                                                                                                           |
 | `models/index.ts`               | Barrel export of models.                                                                                                                                                                                                                                                                                                                                                                                                                           |
 | `core/defaultTheme.ts`          | Assembles `tokens/*` into one complete default `CoreUIXTheme` — a plain `{ ...tokens }` spread; every section (including `zIndex`) now comes from its own `tokens/*.ts` file, nothing is hardcoded inline here.                                                                                                                                                                                                                                    |
@@ -71,29 +75,39 @@ Step by step:
 
 ## CSS variable naming
 
-`generateCssVariables.ts`'s internal `flattenTheme` walks each theme section through one of
-three hand-enumerated constants, not a generic `Object.entries(theme)` loop:
+`generateCssVariables.ts`'s internal `flattenTheme` walks each theme section through one of six
+hand-enumerated constants, not a generic `Object.entries(theme)` loop:
 
 - **`FLAT_SECTIONS`** (`colors`, `radius`, `spacing`, `shadow`, `zIndex`, `breakpoints`, `width`,
-  `height`, `sidebar`) flatten straight to `--cuix-<prefix>-<kebab-key>`, with the prefix per
-  section looked up in the required `SECTION_CSS_PREFIX` map.
+  `height`, `sidebar`, `opacity`) flatten straight to `--cuix-<prefix>-<kebab-key>`, with the
+  prefix per section looked up in the required `SECTION_CSS_PREFIX` map.
 - **`TYPOGRAPHY_SECTIONS`** (`fontFamily`, `fontSize`, `fontWeight`, `letterSpacing`) are the
   nested sub-sections of `typography`, flattened the same way via `TYPOGRAPHY_CSS_PREFIX`.
   `typography.lineHeight` / `lineHeightTight` are each assigned directly to a fixed variable name
   outside of either constant.
+- **`BORDER_SECTIONS`** (`width`, `style`) are the nested sub-sections of `border`, flattened via
+  `BORDER_CSS_PREFIX`.
+- **`TRANSITION_SECTIONS`** (`duration`, `easing`) are the nested sub-sections of `transition`,
+  flattened via `TRANSITION_CSS_PREFIX`.
+- **`TEXT_FLAT_SECTIONS`** (`color`, `decoration`, `transform`, `overflow`, `whiteSpace`, `align`)
+  are the nested sub-sections of `text` that are already flat string maps, flattened via
+  `TEXT_FLAT_CSS_PREFIX`.
+- **`TEXT_PRESET_SECTIONS`** (`heading`, `body`, `caption`, `label`) are the nested sub-sections
+  of `text` that are size-keyed `{ fontSize, fontWeight, lineHeight }` presets, flattened via
+  `TEXT_PRESET_CSS_PREFIX` to `--cuix-<prefix>-<size>-<prop>`.
 - **`EXCLUDED_SECTIONS`** (`flex`) are sections deliberately left out of CSS-variable generation.
 
 After flattening, the function checks every top-level key of the actual theme object against the
-union of these three lists and **throws** (`generateCssVariables: unhandled theme section(s): ...`)
-if anything is missing — this was added specifically because `flex` used to fall through
-unnoticed before `EXCLUDED_SECTIONS` existed. In other words: adding a new top-level section to
-`CoreUIXTheme` without also adding it to one of these three lists is a runtime error, not a
-silently-missing variable.
+union of `FLAT_SECTIONS` + `EXCLUDED_SECTIONS` + `"typography"`/`"text"`/`"border"`/`"transition"`
+and **throws** (`generateCssVariables: unhandled theme section(s): ...`) if anything is missing —
+this was added specifically because `flex` used to fall through unnoticed before
+`EXCLUDED_SECTIONS` existed. In other words: adding a new top-level section to `CoreUIXTheme`
+without also accounting for it here is a runtime error, not a silently-missing variable.
 
 ## How to extend
 
 - **Add a new token / color within an existing section**: add the key to `models/Theme.ts` and give it a default value in the matching `tokens/*.ts` file. No other file needs to change for values _within_ a section already listed in `FLAT_SECTIONS`/`TYPOGRAPHY_SECTIONS`.
-- **Add a whole new top-level section**: also add it to `FLAT_SECTIONS` (with a `SECTION_CSS_PREFIX` entry) or `EXCLUDED_SECTIONS` in `generateCssVariables.ts` — otherwise the app throws at runtime the first time the theme is applied. Add a `tailwind.config.ts` mapping too if it needs a Tailwind semantic-class equivalent.
+- **Add a whole new top-level section**: also add it to `FLAT_SECTIONS` (with a `SECTION_CSS_PREFIX` entry), a new nested-sub-section constant pair (if it has nested sub-objects, following the `BORDER_SECTIONS`/`TEXT_FLAT_SECTIONS` shape), or `EXCLUDED_SECTIONS` in `generateCssVariables.ts`, and add its key to the `accountedFor` set — otherwise the app throws at runtime the first time the theme is applied. Add a `tailwind.config.ts` mapping too if it needs a Tailwind semantic-class equivalent.
 - **Add a new output target** (e.g. React Native styles, JSON export): the pipeline is single-target (CSS variables) by design. Supporting another target would mean introducing a small pluggable seam at `utils/applyTheme.ts` rather than writing straight to `document.documentElement`.
 
 ## Usage example

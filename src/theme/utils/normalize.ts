@@ -15,10 +15,14 @@ function normalizeColor(value: string): string {
 // Returns the theme with all colors normalized.
 export function normalizeTheme(theme: CoreUIXTheme): CoreUIXTheme {
   const colors: CoreUIXTheme["colors"] = Object.fromEntries(
-    Object.entries(theme.colors).map(([key, value]: [string, string]) => [
-      key,
-      normalizeColor(value),
-    ]),
+    Object.entries(theme.colors).map(
+      ([key, value]: [string, string | string[]]) => [
+        key,
+        Array.isArray(value)
+          ? value.map(normalizeColor)
+          : normalizeColor(value),
+      ],
+    ),
   ) as CoreUIXTheme["colors"];
 
   return {

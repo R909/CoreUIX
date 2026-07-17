@@ -68,8 +68,10 @@ Components consume theme values one of two ways:
 
 - **Preferred pattern**: literal Tailwind arbitrary-value classes bound directly to `--cuix-*`
   vars, e.g. `bg-[var(--cuix-colors-primary)]`. This stays in sync with runtime theme overrides
-  automatically. Every current primitive (`button`, `badge`, `input`, `label`, `textarea`) and
-  `layout/card` (including its sub-parts) follows this pattern now.
+  automatically. Every current `primitives/` component (`button`, `badge`, `input`, `label`,
+  `textarea`, `toggle`, `checkbox`, `text`, `tabs`, `select`, `command`, `popover`,
+  `multi-select`) and `layout/card`/`layout/table` (including their sub-parts) follows this
+  pattern now.
 - **Legacy pattern**: bare Tailwind semantic classes (`bg-primary`, `text-foreground`,
   `text-muted-foreground`) that `tailwind.config.ts` maps onto the same `--cuix-*` variables.
   Functionally equivalent at the CSS-variable layer, but bypasses `useTheme()` for any component

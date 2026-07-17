@@ -30,17 +30,34 @@ CoreUIX/
 │   │   │   │   ├── label.types.ts
 │   │   │   │   ├── label.variants.ts
 │   │   │   │   └── index.ts
-│   │   │   └── textarea/
-│   │   │       ├── textarea.tsx
-│   │   │       ├── textarea.types.ts
-│   │   │       ├── textarea.variants.ts
-│   │   │       └── index.ts
+│   │   │   ├── textarea/
+│   │   │   │   ├── textarea.tsx
+│   │   │   │   ├── textarea.types.ts
+│   │   │   │   ├── textarea.variants.ts
+│   │   │   │   └── index.ts
+│   │   │   ├── toggle/              # Radix Toggle, variant/size cva
+│   │   │   ├── checkbox/            # Radix Checkbox + Check icon indicator
+│   │   │   ├── text/                # variant/color cva over theme's text.* tokens
+│   │   │   ├── tabs/                # Radix Tabs/TabsList/TabsTrigger/TabsContent
+│   │   │   ├── select/              # Radix Select + its full sub-part family
+│   │   │   ├── command/             # cmdk-backed searchable list (no Radix primitive)
+│   │   │   ├── popover/             # Radix Popover/PopoverTrigger/PopoverContent/PopoverAnchor
+│   │   │   └── multi-select/        # composes popover+command+button+badge; the one
+│   │   │                            # primitive with no Radix primitive of its own —
+│   │   │                            # tracks selection state via its own MultiSelectContext
 │   │   └── layout/                  # Structural components
 │   │       ├── index.ts
 │   │       ├── card/
 │   │       │   ├── card.tsx         # Card + 5 sub-parts (Header/Title/Description/Content/Footer)
 │   │       │   ├── card.types.ts
 │   │       │   ├── card.variants.ts
+│   │       │   └── index.ts
+│   │       ├── table/               # Table/TableHeader/TableBody/TableFooter/TableRow/
+│   │       │   │                    # TableHead/TableCell/TableCaption — static styled
+│   │       │   │                    # wrapper, no sort/filter/pagination logic
+│   │       │   ├── table.tsx
+│   │       │   ├── table.types.ts
+│   │       │   ├── table.variants.ts
 │   │       │   └── index.ts
 │   │       └── sidebar/             # Large family: SidebarProvider, Sidebar, SidebarTrigger,
 │   │           │                    # SidebarRail/Inset/Input, Header/Footer/Separator/Content,
@@ -82,6 +99,10 @@ CoreUIX/
 │   │   │   ├── sidebarTokens.ts
 │   │   │   ├── flexTokens.ts        # Pre-composed Tailwind class strings, not CSS values
 │   │   │   ├── zIndexTokens.ts
+│   │   │   ├── borderTokens.ts      # border.width / border.style
+│   │   │   ├── opacityTokens.ts     # opacity.none/disabled/hover/full
+│   │   │   ├── transitionTokens.ts  # transition.duration / transition.easing
+│   │   │   ├── textTokens.ts        # text.color + text.heading/body/caption/label presets
 │   │   │   └── index.ts
 │   │   └── utils/                   # Runtime theme → CSS pipeline
 │   │       ├── normalize.ts         # normalizeTheme: expand shorthand hex, etc.
@@ -130,11 +151,12 @@ src/components/index.ts                       → aggregates every category barr
 src/index.ts                                  → public package API
 ```
 
-Current categories: `primitives/` (button, badge, input, label, textarea — atoms with no
-internal composition) and `layout/` (card, and the larger `sidebar/` family — structural
-components). `form/` (react-hook-form-aware composites) hasn't been started yet. New categories
-(`overlay/`, `form/`, `feedback/`, ...) are added only once a component that fits arrives —
-empty categories are not pre-created.
+Current categories: `primitives/` (button, badge, input, label, textarea, toggle, checkbox, text,
+tabs, select, command, popover, multi-select — atoms with no internal composition, though
+`multi-select` is compound, composing `popover`+`command`+`button`+`badge`) and `layout/` (card,
+table, and the larger `sidebar/` family — structural components). `form/` (react-hook-form-aware
+composites) hasn't been started yet. New categories (`overlay/`, `form/`, `feedback/`, ...) are
+added only once a component that fits arrives — empty categories are not pre-created.
 
 ## Naming conventions inside a component folder
 
@@ -145,14 +167,15 @@ empty categories are not pre-created.
 | `<name>.variants.ts` | `cva` variant definitions                                                            |
 | `index.ts`           | Local barrel: re-exports the component itself                                        |
 
-Every current component folder (`button`, `badge`, `input`, `label`, `textarea`, `card`,
-`sidebar`) follows the `.tsx` / `.types.ts` / `.variants.ts` split — `card` has been migrated
-onto it too, so there is no longer a single-file exception. Each component's local `index.ts`
-barrel currently re-exports only the component module itself (`sidebar/index.ts` is the
-exception, since `sidebar.tsx`, `sidebar.variants.ts`, `sidebar.types.ts`, and
-`sidebar-constant.ts` are separate public exports of that one component family) — check the
-target folder's `index.ts` before assuming a variant map or types file is reachable through the
-barrel.
+Every current component folder (`button`, `badge`, `input`, `label`, `textarea`, `toggle`,
+`checkbox`, `text`, `tabs`, `select`, `command`, `popover`, `multi-select`, `card`, `table`,
+`sidebar`) follows the `.tsx` / `.types.ts` / `.variants.ts` split — no single-file exceptions
+remain. Each component's local `index.ts` barrel currently re-exports only the component module
+itself (`sidebar/index.ts` is the exception, since `sidebar.tsx`, `sidebar.variants.ts`,
+`sidebar.types.ts`, and `sidebar-constant.ts` are separate public exports of that one component
+family) — most barrels' comments claim they also re-export `.variants`/`.types`, but check the
+target folder's `index.ts` directly before assuming a variant map or types file is actually
+reachable through the barrel; the comment and the code have drifted apart in most of them.
 
 ## Path alias
 

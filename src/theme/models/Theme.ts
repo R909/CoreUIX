@@ -40,6 +40,47 @@ export interface CoreUIXTheme {
     infoForeground: string;
 
     transparent: string;
+
+    // Additive tokens from the app-side color palette (kept alongside the
+    // existing semantic pairs above; not a replacement for them).
+    text: string;
+    textSecondary: string;
+    notification: string;
+    error: string;
+    disabled: string;
+    placeholder: string;
+    overlay: string;
+    white: string;
+    black: string;
+    gradientColors: string[];
+    cardBackground: string;
+
+    tintGolden: string;
+    tintGoldenBackground: string;
+
+    tintCyan: string;
+    tintCyanBackground: string;
+
+    tintBlue: string;
+    tintBlueBackground: string;
+
+    tintPurple: string;
+    tinitPurpleBackground: string;
+    lightWhite: string;
+    yellow: string;
+
+    gradientStart: string;
+    gradientEnd: string;
+
+    userInfoCardText: string;
+    grey: string;
+    serviceBG: string;
+    toggleBG: string;
+    toggleBtnBG: string;
+
+    mainAppBg: string;
+
+    cyanBlue: string;
   };
 
   radius: {

@@ -50,7 +50,7 @@ code (a pre-existing React-level concern, not specific to this library).
   consumer yet — `dist/` only exists locally after `pnpm build` runs (via `prepare` or
   manually). Don't assume a git-dependency install "just works" today; it doesn't produce a
   `dist/` on its own without lifecycle scripts enabled.
-- Runtime dependencies (`@radix-ui/*`, `class-variance-authority`, `clsx`, `lucide-react`,
+- Runtime dependencies (`@radix-ui/*`, `class-variance-authority`, `clsx`, `cmdk`, `lucide-react`,
   `tailwind-merge`, `tailwindcss-animate`) are all well-known, widely-used packages with no
   native/postinstall build steps. Before adding a new runtime dependency, check it doesn't
   introduce one.

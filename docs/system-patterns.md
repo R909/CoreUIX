@@ -41,11 +41,21 @@ new top-level theme **section** does require hand-wiring it into `flattenTheme` 
 Every styled component defines its variant classes with `class-variance-authority` (re-exported
 as `createVariants` from `src/utils/createVariants.ts`) in a sibling `<name>.variants.ts` file,
 not inline in the component. This keeps the component body focused on structure/behavior and
-makes the variant map independently importable. Note: as of the current source, most component
-barrels (`button`, `badge`, `input`, `label`, `textarea`, `card`) only re-export the component's
-own module, not the sibling `.variants.ts`/`.types.ts` files — see
+makes the variant map independently importable. Note: as of the current source, every component
+barrel (`button`, `badge`, `input`, `label`, `textarea`, `toggle`, `checkbox`, `text`, `tabs`,
+`select`, `command`, `popover`, `multi-select`, `card`, `table`) only re-exports the component's
+own module, not the sibling `.variants.ts`/`.types.ts` files (`sidebar` is the exception) — see
 [api-patterns.md](./api-patterns.md#exports-per-component) for what's actually reachable through
 each barrel today.
+
+A `cva(...)` call with a real `variants` map (e.g. `button`, `badge`, `toggle`, `text`) must stay
+uninferred behind the `// eslint-disable-next-line @typescript-eslint/typedef` exemption — never
+an explicit `ReturnType<typeof cva>` annotation, which widens the type and erases the literal
+variant-key narrowing (`text.variants.ts`'s `textVariants` hit this exact regression: annotating
+it made `VariantProps<typeof textVariants>` stop exposing `variant`/`color` at all). A `cva(...)`
+call with **no** `variants` map at all (base classes only — `card`, `table`, `popover`'s
+`popoverContentVariants`) is the one case where the explicit annotation is actually safe, since
+there's no variant-key narrowing to lose.
 
 ## 4. `asChild` + Radix `Slot` for polymorphic rendering
 
@@ -71,8 +81,8 @@ This guarantees conflicting Tailwind utilities (`"p-2 p-4"` → `"p-4"`) resolve
 
 - **Preferred**: literal Tailwind arbitrary-value classes bound to `--cuix-*` vars
   (`bg-[var(--cuix-colors-primary)]`), as in `button.variants.ts`. Stays in sync with runtime
-  theme overrides. Every current primitive (`button`, `badge`, `input`, `label`, `textarea`) and
-  `card` (including its sub-parts) follows this now.
+  theme overrides. Every current `primitives/` component and `card`/`table` (including their
+  sub-parts) follows this now.
 - **Legacy**: bare Tailwind semantic classes (`bg-primary`, `text-muted-foreground`) mapped in
   `tailwind.config.ts`. Works, but doesn't route through `useTheme()` for any JS-side logic. This
   shows up in a few `layout/sidebar` sub-parts — `sheet.tsx`, `tooltip.tsx`, `skeleton.tsx`.
@@ -135,3 +145,23 @@ that make several of the patterns above mechanically enforced rather than just d
 
 Since `pnpm build` runs `eslint .` first (pattern 9 above), any violation of these rules blocks
 the build, not just the pre-commit hook.
+
+## 12. Component-scoped `Context` when there's no Radix primitive to delegate to
+
+Every Radix-backed component in this repo delegates its interactive state (open/closed,
+checked/unchecked, selected value) to the underlying `@radix-ui/react-*` primitive — there's no
+custom state-tracking code to write. Two components have no such primitive to delegate to, and
+both independently converge on the same fix: a component-scoped `React.createContext`, read via a
+`useX()` hook, holding just enough state to coordinate the compound component's own sub-parts:
+
+- `layout/sidebar`'s `SidebarContext`/`useSidebar()` — `useSidebar()` throws if called outside a
+  `SidebarProvider`.
+- `primitives/multi-select`'s `MultiSelectContext`/`useMultiSelect()` — since there's no
+  `@radix-ui/react-multi-select`, selection state (`selectedValues`, `toggleValue`, open state,
+  registered `items`) lives here instead, with `values`/`onValuesChange` for external control and
+  `defaultValues` for an uncontrolled fallback.
+
+When building a new compound component that has no first-party Radix primitive, follow this
+shape rather than inventing prop-drilling or an external state library — see
+[modules/components.md](./modules/components.md#primitivesmulti-select) for the multi-select
+specifics.
